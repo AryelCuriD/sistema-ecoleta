@@ -1,9 +1,13 @@
+:root {
+    --fundo: #F2F7F1;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     font-family: 'Open Sans', sans-serif;
-    background-color: #F2F7F1;
+    background-color: var(--fundo)
 }
 
 body {

@@ -1,0 +1,92 @@
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+.banner {
+  width: 100%;
+  height: 300px;
+  background-color: #365C45;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 80px;
+  box-sizing: border-box;
+}
+
+.imagem-banner {
+  height: 220px;
+  border-radius: 40px;
+  object-fit: cover;
+}
+
+.banner-texto {
+  max-width: 50%;
+}
+
+.banner-texto h2 {
+  color: #A8D5A2;
+  margin: 0 0 16px 0;
+}
+
+.banner-texto p {
+  color: #F2F7F1;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.conteudo {
+  display: flex;
+  gap: 32px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.filtros {
+    width: 15%;
+    height: 420px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    position: relative;
+    padding-top: 15px;
+}
+
+.img-filter {
+    height: 34px;
+    position: absolute;
+    left: 15px;
+}
+
+a {
+    font-weight: bold;
+    color: #233026;
+    text-decoration: none;
+    height: 34px;
+    display: flex;
+    align-items: center;
+}
+
+.card-empresas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+.card {
+  width: 85%;
+  height: 150px;
+
+  background-color: #ffffff;
+  border-radius: 10px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
