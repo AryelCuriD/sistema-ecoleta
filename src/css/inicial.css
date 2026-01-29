@@ -46,31 +46,65 @@ main {
 
 .filtros {
     width: 15%;
-    height: 420px;
+    min-width: 220px;
+    height: fit-content;
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
     
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    position: relative;
-    padding-top: 15px;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.filtros-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    color: #233026;
+    text-transform: uppercase;
 }
 
 .img-filter {
-    height: 34px;
-    position: absolute;
-    left: 15px;
+    height: 28px;
 }
 
-a {
-    font-weight: bold;
-    color: #233026;
-    text-decoration: none;
-    height: 34px;
+.filtro-grupo {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    color: #365C45;
+    font-size: 14px;
+}
+
+.filtro-grupo label {
+    margin: 0;
+    font-size: 15px;
+    color: #233026;
+    font-weight: bold;
+}
+
+.filtro-botao {
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background-color: #6fbf73;
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.filtro-grupo select {
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid #d6e3d6;
+    padding: 0 12px;
+    background-color: #ffffff;
+    color: #233026;
+    font-weight: bold;
 }
 
 .card-empresas {
@@ -80,13 +114,79 @@ a {
   gap: 24px;
 }
 
+.card-empresas h3 {
+    margin: 0;
+    color: #233026;
+}
 
 .card {
-  width: 85%;
-  height: 150px;
-
+  width: 100%;
+  min-height: 190px;
   background-color: #ffffff;
   border-radius: 10px;
 
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.card-imagem {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    background-color: #e6efe5;
+    color: #365C45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.card-info h4 {
+    margin: 0;
+    color: #233026;
+}
+
+.card-info p {
+    margin: 0;
+    color: #365C45;
+    font-size: 14px;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.card-tags span {
+    background-color: #f2f7f1;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #233026;
+}
+
+.card-botao {
+    background-color: #6fbf73;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    align-self: flex-start;
 }
