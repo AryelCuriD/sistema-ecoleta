@@ -1,16 +1,40 @@
-import mongoose from "mongoose";
-import dotenv from 'dotenv';
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const path = require('path');
+require('dotenv').config(); 
+const uri = process.env.MONGO_URI;
 
-dotenv.config();
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+  connectTimeoutMS: 100000, 
+  socketTimeoutMS: 450000,
+  maxPoolSize: 10,
+  minPoolSize: 2 
+});
 
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log('MongoDB Conectado 🙉');
-    } catch (err) {
-        console.error(err);
-        process.exit(1);
-    }
+let bd;
+
+const connectToDb = async () => {  
+  try {
+    await client.connect();
+    bd = client.db("sistema-ecoleta");
+  } catch (err) {
+    console.error("Erro ao conectar ao MongoDB:", err);
+    throw err; 
+  }
 };
 
-export default connectDB;
+const closeConnection = async () => {
+  await client.close();
+};
+
+module.exports = {
+  connectToDb,
+  closeConnection,
+  ObjectId,
+  client,
+  getDb: () => bd
+};
