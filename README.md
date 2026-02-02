@@ -12,7 +12,6 @@ A plataforma atua como um **catálogo inteligente de empresas**, permitindo busc
 - Tipo de material
 - Cidade e localização
 - Pontos de coleta (ecopontos)
-- Busca inteligente com auxílio de IA (opcional)
 
 O objetivo é reduzir o descarte inadequado, otimizar a logística reversa e fortalecer a cadeia sustentável de gestão de resíduos.
 
@@ -54,7 +53,6 @@ O objetivo é reduzir o descarte inadequado, otimizar a logística reversa e for
 - Listagem de materiais coletados
 - Filtros de busca tradicionais
 - Mapa com pontos de coleta
-- Busca inteligente com IA (opcional)
 - Recomendação de descarte sustentável
 - Edição e exclusão de perfil da empresa
 
