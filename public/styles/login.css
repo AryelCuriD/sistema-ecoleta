@@ -1,0 +1,158 @@
+/* Mantém o fundo e centraliza tudo */
+.login-page main {
+  flex: 1;
+}
+
+/* Main centralizado (sem header/footer) */
+.login-main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  padding: 40px 16px;
+  box-sizing: border-box;
+}
+
+/* Topo: logo + título + subtítulo */
+.login-topo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.login-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  opacity: 0.6;
+}
+
+.login-titulo {
+  margin: 0;
+  font-size: 16px;
+  color: #233026;
+  font-weight: 800;
+}
+
+.login-subtitulo {
+  margin: 0;
+  font-size: 12px;
+  color: #6C8893;
+  font-weight: 600;
+}
+
+/* Card branco central */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+  padding: 34px 36px;
+  box-sizing: border-box;
+}
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-label {
+  font-size: 12px;
+  color: #6C8893;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+/* Inputs */
+.login-input {
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #cfd8cf;
+  padding: 0 14px;
+  font-size: 13px;
+  color: #233026;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+.login-input::placeholder {
+  color: #9aa7a0;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #6fbf73;
+  box-shadow: 0 0 0 3px rgba(111, 191, 115, 0.15);
+}
+
+/* Checkbox */
+.login-lembrar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6C8893;
+  font-weight: 600;
+}
+
+.login-lembrar input {
+  width: 14px;
+  height: 14px;
+  accent-color: #6fbf73;
+}
+
+/* Botão amarelo */
+.login-botao {
+  margin-top: 10px;
+  height: 46px;
+  border: none;
+  border-radius: 10px;
+  background-color: #E9C46A;
+  color: #233026;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+.login-botao:hover {
+  opacity: 0.92;
+}
+
+/* Link cadastrar */
+.login-cadastro {
+  margin: 14px 0 0 0;
+  font-size: 12px;
+  text-align: center;
+  color: #6C8893;
+  font-weight: 600;
+}
+
+.login-link {
+  color: #6fbf73;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+/* Voltar */
+.login-voltar {
+  font-size: 12px;
+  color: #233026;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.login-voltar:hover {
+  text-decoration: underline;
+}

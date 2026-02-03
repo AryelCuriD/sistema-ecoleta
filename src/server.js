@@ -1,7 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const login = require('./controllers/login.js');
+const logout = require('./controllers/logout.js');
+const auth = require('./controllers/verifyAuth.js');
 const { connectToDb, getDb, client } = require('./config/database.js');
 const { encontrarEmpresa, criarDadosDeIdentificacao, excluirDadosDeIdentificacao, editarDadosDeIdentificacao } = require('./config/collections/company_basic_info.js');
+const cookieParser = require('cookie-parser');
 
 connectToDb();
 
@@ -9,6 +15,7 @@ connectToDb();
 const app = express();
 app.use(express.json());
 app.use(express.static('public'))
+app.use(cookieParser());
 
 // Rotas HTML
 app.get('/initial-page', async (req, res) => {
@@ -37,6 +44,10 @@ app.get('/empresas/dados-de-identificacao', async (req, res) => {
 });
 
 //POST
+
+//Login / logout de empresa
+app.post('/api/login', (req, res) => login(req, res, USERS))
+app.post('api/logout', logout)
 
 // Criar dados básicos das empresas
 app.post('/empresas/dados-de-identificacao', async (req, res) => {

@@ -23,8 +23,52 @@
     <a class="info" href="/about">Sobre o Site</a>
   </header>
 
-  <main>
+<main class="login-main">
 
+    <div class="login-topo">
+      <img src="../images/logo.png" alt="Ecoleta" class="login-logo" />
+
+      <h1 class="login-titulo">Login de Empresa</h1>
+      <p class="login-subtitulo">Acesse sua conta para gerenciar seu perfil!</p>
+    </div>
+
+    <section class="login-card">
+      <form class="login-form" action="#" method="post">
+        <label class="login-label" for="email">E-mail</label>
+        <input
+          class="login-input"
+          type="email"
+          id="email"
+          name="email"
+          placeholder="seu@email.com"
+          required
+        />
+
+        <label class="login-label" for="senha">Senha</label>
+        <input
+          class="login-input"
+          type="password"
+          id="senha"
+          name="senha"
+          placeholder="**********"
+          required
+        />
+
+        <label class="login-lembrar">
+          <input type="checkbox" name="lembrar" />
+          <span>Lembrar de mim</span>
+        </label>
+
+        <button class="login-botao" type="submit">ENTRAR</button>
+
+        <p class="login-cadastro">
+          Não tem uma conta?
+          <a href="#" class="login-link">Cadastrar empresa</a>
+        </p>
+      </form>
+    </section>
+
+    <a class="login-voltar" href="/initial-page">← Voltar à página inicial</a>
   </main>
 
   <footer>
