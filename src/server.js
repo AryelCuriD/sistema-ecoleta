@@ -7,6 +7,7 @@ const logout = require('./controllers/logout.js');
 const auth = require('./controllers/verifyAuth.js');
 const { connectToDb, getDb, client } = require('./config/database.js');
 const { encontrarEmpresa, criarDadosDeIdentificacao, excluirDadosDeIdentificacao, editarDadosDeIdentificacao } = require('./config/collections/company_basic_info.js');
+const { registerCompany, getUsers } = require('./config/collections/company_user.js');
 const cookieParser = require('cookie-parser');
 
 connectToDb();
@@ -30,6 +31,10 @@ app.get('/about', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/aboutPage.html'));
 });
 
+app.get('/signin', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/pages/signInPage.html'));
+});
+
 //GET
 
 // GET dados básicos das empresas
@@ -46,8 +51,20 @@ app.get('/empresas/dados-de-identificacao', async (req, res) => {
 //POST
 
 //Login / logout de empresa
-app.post('/api/login', (req, res) => login(req, res, USERS))
+app.post('/api/login', async (req, res) => login(req, res, await getUsers()));
 app.post('api/logout', logout)
+
+//Sign in de empresa
+app.post('/api/signin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    registerCompany(email, bcrypt.hashSync(password, 10));
+    res.status(201).json({ message: 'Empresa registrada com sucesso' });
+  } catch(err) {
+    res.status(500).json({ error: 'Erro ao registrar nova empresa' });
+  }
+})
 
 // Criar dados básicos das empresas
 app.post('/empresas/dados-de-identificacao', async (req, res) => {

@@ -1,20 +1,21 @@
 const { connectToDb, getDb, ObjectId } = require('../database.js');
+const collection = 'company_info';
 
 const encontrarEmpresa = async () => {
   try {
     await connectToDb();
     const bd = getDb();
     console.log(getDb())
-    const collection_empresas = bd.collection("empresas");
-    const encontrar = await collection_empresas.find().toArray();
+    const collection_empresas = bd.collection(collection);
+    const find = await collection_empresas.findOne()
 
-    if (encontrar.length === 0) {
+    if (find.length === 0) {
       console.log("Nenhum documento foi encontrado.");
       return null; 
     }
 
-    console.log(encontrar)
-    return encontrar;
+    console.log(find)
+    return find;
 
   } catch (err) {
     console.error("Erro ao encontrar empresa:", err.message);
@@ -26,7 +27,7 @@ const criarDadosDeIdentificacao = async (nome_empresa, cnpj, razao_social, logo,
   try {
     await connectToDb();
     const bd = getDb();
-    const collection_empresas = bd.collection("empresas");
+    const collection_empresas = bd.collection(collection);
   
     const novosDados = {
       nome_empresa: nome_empresa,
@@ -47,7 +48,7 @@ const excluirDadosDeIdentificacao = async (id) => {
   try {
     await connectToDb();
     const bd = getDb();
-    const collection_empresas = bd.collection("empresas");
+    const collection_empresas = bd.collection(collection);
 
     const resultado = await collection_empresas.deleteOne({ _id: new ObjectId(id) });
     return resultado.deletedCount > 0;
@@ -61,7 +62,7 @@ const editarDadosDeIdentificacao = async (id, updatedData) => {
   try {
     await connectToDb();
     const bd = getDb();
-    const collection_empresas = bd.collection("empresas");
+    const collection_empresas = bd.collection(collection);
 
     const resultado = await collection_empresas.updateOne(
       { _id: new ObjectId(id) },
