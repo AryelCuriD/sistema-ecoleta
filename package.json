@@ -18,5 +18,15 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.0.0",
     "multer": "^2.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AryelCuriD/sistema-ecoleta.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AryelCuriD/sistema-ecoleta/issues"
+  },
+  "homepage": "https://github.com/AryelCuriD/sistema-ecoleta#readme",
+  "devDependencies": {}
 }
