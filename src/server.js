@@ -6,11 +6,11 @@ const login = require('./controllers/login.js');
 const logout = require('./controllers/logout.js');
 const auth = require('./controllers/verifyAuth.js');
 const { connectToDb, getDb, client } = require('./config/database.js');
-const { encontrarEmpresa, criarDadosDeIdentificacao, excluirDadosDeIdentificacao, editarDadosDeIdentificacao } = require('./config/collections/company_basic_info.js');
+const { encontrarEmpresa, criarDadosDeIdentificacao, excluirDadosDeIdentificacao, editarDadosDeIdentificacao } = require('./config/collections/company_info.js');
 const { registerCompany, getUsers } = require('./config/collections/company_user.js');
 const cookieParser = require('cookie-parser');
 
-connectToDb();
+//connectToDb();
 
 //App
 const app = express();
@@ -40,13 +40,22 @@ app.get('/signin', async (req, res) => {
 // GET dados básicos das empresas
 app.get('/empresas/dados-de-identificacao', async (req, res) => {
     try{
-        const getEmpresas = await encontrarEmpresa();
-        res.status(201).json(getEmpresas);
+        const companies = await encontrarEmpresa();
+        res.status(201).json(companies);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Erro ao pegar os dados" });
     }
 });
+
+// Pegar usuários (empresas cadastradas)
+app.get('/empresas/usuarios', async (req, res) => {
+  try {
+    res.status(201).json(await getUsers())
+  } catch(err) {
+    res.status(500).json({ error: 'Erro ao pegar usuários' })
+  }
+})
 
 //POST
 
