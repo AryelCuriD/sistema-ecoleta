@@ -92,6 +92,16 @@
   box-shadow: 0 0 0 3px rgba(111, 191, 115, 0.15);
 }
 
+/* mensagem de erro do login */
+.error-msg {
+  display: none;
+  color: #A74545;
+  font-size: 12px;
+  height: 14px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
 /* Checkbox */
 .login-lembrar {
   display: flex;

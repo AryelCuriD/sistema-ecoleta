@@ -1,7 +1,7 @@
 const { connectToDb, getDb, ObjectId } = require('../database.js');
 const collection = 'company_info';
 
-const encontrarEmpresa = async () => {
+const findCompany = async () => {
   try {
     await connectToDb();
     const bd = getDb();
@@ -23,7 +23,7 @@ const encontrarEmpresa = async () => {
   }
 };
 
-const criarDadosDeIdentificacao = async (nome_empresa, cnpj, razao_social, logo, descricao) => {
+const createInfo = async (nome_empresa, cnpj, razao_social, logo, descricao) => {
   try {
     await connectToDb();
     const bd = getDb();
@@ -44,7 +44,7 @@ const criarDadosDeIdentificacao = async (nome_empresa, cnpj, razao_social, logo,
   }
 };
 
-const excluirDadosDeIdentificacao = async (id) => {
+const deleteInfo = async (id) => {
   try {
     await connectToDb();
     const bd = getDb();
@@ -58,7 +58,7 @@ const excluirDadosDeIdentificacao = async (id) => {
   }
 };
 
-const editarDadosDeIdentificacao = async (id, updatedData) => {
+const editInfo = async (id, updatedData) => {
   try {
     await connectToDb();
     const bd = getDb();
@@ -77,8 +77,8 @@ const editarDadosDeIdentificacao = async (id, updatedData) => {
 }
 
 module.exports = {
-  encontrarEmpresa,
-  criarDadosDeIdentificacao,
-  excluirDadosDeIdentificacao,
-  editarDadosDeIdentificacao
+  findCompany: findCompany,
+  createInfo: createInfo,
+  deleteInfo: deleteInfo,
+  editInfo: editInfo
 };
