@@ -5,7 +5,6 @@ const findCompany = async () => {
   try {
     await connectToDb();
     const bd = getDb();
-    console.log(getDb())
     const collection_empresas = bd.collection(collection);
     const find = await collection_empresas.findOne()
 
@@ -14,7 +13,6 @@ const findCompany = async () => {
       return null; 
     }
 
-    console.log(find)
     return find;
 
   } catch (err) {

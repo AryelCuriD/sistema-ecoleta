@@ -9,8 +9,9 @@ const multer = require('multer');
 const { GridFSBucket } = require('mongodb');
 const { connectToDb, getDb } = require('./config/database.js');
 const { findCompany, createInfo, deleteInfo, editInfo } = require('./config/collections/company_info.js');
-const { registerCompany, getUsers } = require('./config/collections/company_user.js');
+const { findUser, registerCompany, getUsers } = require('./config/collections/company_user.js');
 const cookieParser = require('cookie-parser');
+const verifyAuth = require('./controllers/verifyAuth.js');
 
 //App
 const app = express();
@@ -19,8 +20,6 @@ app.use(express.static('public'))
 app.use(cookieParser());
 
 const upload = multer({ storage: multer.memoryStorage() });
-
-connectToDb();
 
 let bucket;
 async function startBd() {
@@ -43,14 +42,14 @@ app.get('/about', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/aboutPage.html'));
 });
 
-app.get('/signin', async (req, res) => {
+app.get('/sign-in', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/signInPage.html'));
 });
 
 //GET
 
 // GET dados básicos das empresas
-app.get('/empresas/info', async (req, res) => {
+app.get('/empresas/info', verifyAuth, async (req, res) => {
     try{
         const companies = await findCompany();
         res.status(201).json(companies);
@@ -58,6 +57,23 @@ app.get('/empresas/info', async (req, res) => {
       console.error(err);
       res.status(500).json({ error: "Erro ao pegar os dados" });
     }
+});
+
+app.get('/empresas/user/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    const user = await findUser(id); 
+    
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao pegar usuário', details: err.message });
+  } 
 });
 
 // GET logo da empresa
@@ -101,9 +117,12 @@ app.post('/api/login', async (req, res) => {
   login(req, res, await getUsers())
 });
 app.post('api/logout', logout)
+app.get('/api/verify', verifyAuth, (req, res) => {
+  res.json({ message: 'acesso permitido a rota protegida', user: req.user })
+});
 
 //Sign in de empresa
-app.post('/api/signin', async (req, res) => {
+app.post('/api/signin', async (req, res) => { 
   try {
     const { email, password } = req.body;
 
