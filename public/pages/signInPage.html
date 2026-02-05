@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecoleta</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/signIn.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+
+<body>
+
+  <header>
+    <a href="/initial-page"><img src="../images/logo.png" class="logo"></a>
+    <a class="login" href="/login">Faça Login</a>
+
+    <div class="search-div">
+      <input type="text" placeholder="Encontrar empresas..." class="search">
+      <img src="../images/lupa.png" class="lupa" alt="buscar">
+    </div>
+
+    <a class="info" href="/about">Sobre o Site</a>
+  </header>
+
+  <main class="cadastro-main">
+    <section class="cadastro-topo">
+      <img src="../images/logo.png" alt="Ecoleta" class="cadastro-logo" />
+      <h1 class="cadastro-titulo">Cadastro de Empresa</h1>
+      <p class="cadastro-subtitulo">Preencha as informações abaixo para<br>cadastrar sua empresa na plataforma</p>
+    </section>
+
+    <section class="cadastro-card" data-step="1">
+      <div class="cadastro-card-header">
+        <div>
+          <h2>Dados de Identificação</h2>
+          <p>Dados básicos de identificação para verificar se a empresa existe.</p>
+        </div>
+        <span class="cadastro-etapa">Etapa 1 de 5</span>
+      </div>
+
+      <div class="cadastro-form">
+        <div class="cadastro-col">
+          <label for="nome-empresa">Nome da Empresa</label>
+          <input id="nome-empresa" type="text" placeholder="Digite o nome fantasia da empresa">
+
+          <label for="cnpj">CNPJ</label>
+          <input id="cnpj" type="text" placeholder="Digite o CNPJ da empresa">
+
+          <label for="razao-social">Razão Social</label>
+          <input id="razao-social" type="text" placeholder="Digite a Razão Social da empresa">
+
+          <label for="logo">Logo da empresa</label>
+          <label class="upload-box" for="logo"> 
+            <span class="upload-icon">⬇</span>
+            <small>Inserir uma logo quadrada</small>
+          </label>
+          <input id="logo" type="file" class="upload-input">
+        </div>
+
+        <div class="cadastro-col">
+          <label for="descricao">Descrição (Princípios / Missão da empresa)</label>
+          <textarea id="descricao" rows="10" placeholder="digite um texto curto explicando valores, atuação e comprometimento ambiental"></textarea>
+          <span class="char-count">0/1000 caracteres</span>
+        </div>
+      </div>
+
+      <div class="cadastro-acoes">
+        <button class="btn-avancar" type="button">Avançar</button>
+      </div>
+    </section>
+
+    <section class="cadastro-card is-hidden" data-step="2">
+      <div class="cadastro-card-header">
+        <div>
+          <h2>Informações de Contato</h2>
+          <p>Essas informações ficarão visíveis para as pessoas físicas que buscam descartar algo.</p>
+        </div>
+        <span class="cadastro-etapa">Etapa 2 de 5</span>
+      </div>
+
+      <div class="cadastro-form">
+        <div class="cadastro-col">
+          <label for="telefone">Telefone</label>
+          <input id="telefone" type="text" placeholder="Digite o telefone de contato da empresa">
+
+          <label for="email-corporativo">E-mail corporativo</label>
+          <input id="email-corporativo" type="text" placeholder="Digite o email corporativo da empresa">
+        </div>
+
+        <div class="cadastro-col">
+          <p class="redes-titulo">Redes Sociais</p>
+
+          <label for="facebook">Facebook</label>
+          <input id="facebook" type="text" placeholder="Exemplo: https://www.facebook.com/minhaempresa">
+
+          <label for="instagram">Instagram</label>
+          <input id="instagram" type="text" placeholder="Exemplo: https://www.instagram.com/minhaempresa">
+
+          <label for="linkedin">Linkedin</label>
+          <input id="linkedin" type="text" placeholder="Exemplo: https://www.linkedin.com/company/minhaempresa">
+
+          <label for="twitter">X (Twitter)</label>
+          <input id="twitter" type="text" placeholder="Exemplo: https://x.com/minhaempresa">
+        </div>
+      </div>
+
+      <div class="cadastro-acoes with-voltar">
+        <button class="btn-voltar" type="button">←</button>
+        <button class="btn-avancar" type="button">Avançar</button>
+      </div>
+    </section>
+
+    <section class="cadastro-card is-hidden" data-step="3">
+      <div class="cadastro-card-header">
+        <div>
+          <h2>Escopo de Coleta</h2>
+          <p>Digite os tipos de resíduos recicláveis que a sua empresa procura.</p>
+        </div>
+        <span class="cadastro-etapa">Etapa 3 de 5</span>
+      </div>
+
+      <div class="residuos-wrapper">
+        <div class="residuos-card">
+          <div class="residuos-list">
+            <div class="residuo-item">
+              <span class="residuo-label">Resíduo 1</span>
+              <input type="text" placeholder="Exemplo: Papelão">
+            </div>
+          </div>
+          <button class="add-residuo" type="button">＋</button>
+        </div>
+      </div>
+
+      <div class="cadastro-acoes with-voltar">
+        <button class="btn-voltar" type="button">←</button>
+        <button class="btn-avancar" type="button">Avançar</button>
+      </div>
+    </section>
+
+    <section class="cadastro-card is-hidden" data-step="4">
+      <div class="cadastro-card-header">
+        <div>
+          <h2>Pontos de Coleta de Materiais</h2>
+          <p>Informações de pontos de coleta onde a empresa pode buscar o material desejado.</p>
+        </div>
+        <span class="cadastro-etapa">Etapa 4 de 5</span>
+      </div>
+
+      <div class="coleta-grid">
+        <div class="mapa-coleta">
+          <div id="mapa-cascavel" aria-label="Mapa de Cascavel - PR"></div>
+        </div>
+
+        <div class="pontos-card">
+          <div class="pontos-list" aria-live="polite"></div>
+          <button class="add-ponto" type="button">＋</button>
+        </div>
+      </div>
+
+      <div class="cadastro-acoes with-voltar">
+        <button class="btn-voltar" type="button">←</button>
+        <button class="btn-avancar" type="button">Avançar</button>
+      </div>
+    </section>
+
+    <section class="cadastro-card is-hidden" data-step="5">
+      <div class="cadastro-card-header">
+        <div>
+          <h2>Finalizar o Cadastro</h2>
+          <p>Para finalizar o cadastro, preencha as informações de email e senha</p>
+        </div>
+        <span class="cadastro-etapa">Etapa 5 de 5</span>
+      </div>
+
+      <div class="finalizar-form">
+        <div class="finalizar-field">
+          <label for="email-final">E-mail Corporativo</label>
+          <input id="email-final" type="email" placeholder="Insira um e-mail para login">
+        </div>
+
+        <div class="finalizar-field">
+          <label for="senha-final">Criar Senha</label>
+          <div class="finalizar-senha">
+            <input id="senha-final" type="password" placeholder="Digite uma senha para sua conta">
+          </div>
+          <small class="finalizar-hint">A senha deve conter no mínimo 8 dígitos com pelo menos 1 letra maiúscula e 1 número</small>
+        </div>
+
+        <div class="finalizar-field">
+          <label for="confirmar-senha-final">Confirmar Senha</label>
+          <input id="confirmar-senha-final" type="password" placeholder="Digite sua senha novamente">
+        </div>
+      </div>
+
+      <div class="cadastro-acoes with-voltar">
+        <button class="btn-voltar" type="button">←</button>
+        <button class="btn-finalizar" type="button">Finalizar</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="direitos">© 2025 - Ecoleta - Todos os direitos reservados</p>
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../scripts/signIn.js"></script>
+</body>
+
+</html>
