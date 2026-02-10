@@ -55,6 +55,12 @@ const createInfo = async (user_id, nome_empresa, cnpj, razao_social, logo, descr
     await connectToDb();
     const bd = getDb();
     const collection_empresas = bd.collection(collection);
+    const realIds = bd.collection('company_info').find();
+    const logos = realIds.map(doc => doc.logo);
+    const files = bd.collection('uploads.files').find();
+    const chunks = bd.collection('uploads.chunks').find();
+
+    
 
     const newData = {
       user_id: user_id,
@@ -92,12 +98,17 @@ const editInfo = async (id, updatedData) => {
     const bd = getDb();
     const collection_empresas = bd.collection(collection);
 
+    if (!ObjectId.isValid(id)) {
+      return false;
+    }
+
     const resultado = await collection_empresas.updateOne(
       { _id: new ObjectId(id) },
       { $set: updatedData }
     );
     
     return resultado.modifiedCount > 0;
+    return resultado.matchedCount > 0;
   } catch (err) {
     console.error("Erro ao editar dados de identificação da empresa:", err.message);
     throw err;

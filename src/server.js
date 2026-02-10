@@ -6,7 +6,7 @@ const login = require('./controllers/login.js');
 const logout = require('./controllers/logout.js');
 const auth = require('./controllers/verifyAuth.js');
 const multer = require('multer');
-const { GridFSBucket } = require('mongodb');
+const { GridFSBucket, ObjectId } = require('mongodb');
 const { connectToDb, getDb } = require('./config/database.js');
 const { getInfos, findCompany, createInfo, deleteInfo, editInfo } = require('./config/collections/company_info.js');
 const { createContact, getContacts, findContact, editContact, deleteContact } = require('./config/collections/company_contact.js');
@@ -295,24 +295,69 @@ app.post('/empresas/contato', async (req, res) => {
 
 // Editar dados básicos das empresas
 
-// PHA man isso vai ser complicado véi, tem q fazer o upload da logo nova e subtituir la no banco. fudeu
-app.put('/empresas/info/:id', async (req, res) => {
+app.put("/empresas/info/:info_id", upload.single("logo"), async (req, res) => {
   try {
-    const { id } = req.params;
-    const updatedData = req.body;
+    const { info_id } = req.params;
+    if (!info_id) {
+      return res.status(400).json({ error: "info_id é obrigatório." });
+    }
 
-    const resultado = await editInfo(id, updatedData);
+    const { nome_empresa, cnpj, razao_social, descricao } = req.body || {};
+    const updateFields = {};
 
-    if (resultado) {
-      res.status(200).json({ message: "Dados de identificação editados com sucesso." });
+    if (nome_empresa !== undefined) updateFields.nome_empresa = String(nome_empresa).trim();
+    if (razao_social !== undefined) updateFields.razao_social = String(razao_social).trim();
+    if (descricao !== undefined) updateFields.descricao = String(descricao).trim();
+
+    if (cnpj !== undefined) {
+      const onlyDigits = String(cnpj).replace(/\D/g, "");
+      if (onlyDigits.length !== 14) {
+        return res.status(400).json({ error: "CNPJ inválido (precisa ter 14 dígitos)." });
+      }
+      updateFields.cnpj = onlyDigits;
+    }
+
+    if (req.file) {
+      const filename = Date.now() + "-" + req.file.originalname;
+      const uploadStream = bucket.openUploadStream(filename);
+
+      uploadStream.end(req.file.buffer);
+
+      uploadStream.on("finish", async () => {
+        const fileId = uploadStream.id; // agora é o mesmo _id em upload.files
+        updateFields.logo = fileId;
+
+        const updated = await editInfo(info_id, updateFields);
+
+        if (!updated) {
+          return res.status(404).json({ error: "Info da empresa não encontrada para este info_id." });
+        }
+
+        return res.status(200).json({
+          message: "Info da empresa atualizada com sucesso",
+          info: updated,
+        });
+      });
     } else {
-      res.status(404).json({ error: "Dados de identificação não encontrados." });
+      if (Object.keys(updateFields).length === 0) {
+        return res.status(400).json({ error: "Envie pelo menos um campo ou o arquivo 'logo'." });
+      }
+
+      const updated = await editInfo(info_id, updateFields);
+
+      if (!updated) {
+        return res.status(404).json({ error: "Info da empresa não encontrada para este info_id." });
+      }
+
+      return res.status(200).json({
+        message: "Info da empresa atualizada com sucesso",
+        info: updated,
+      });
     }
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro ao editar dados de identificação da empresa." });
+    return res.status(500).json({ error: "Erro ao atualizar info da empresa", details: err.message });
   }
-})
+});
 
 // Editar dados de contato das empresas
 app.put('/empresas/contato/:id', async (req, res) => {
