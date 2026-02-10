@@ -42,10 +42,10 @@ const registerCompany = async (email, password) => {
       email: email,
       password: password
     }
-    const result = await collection_users.insertOne(newData);
+    await collection_users.insertOne(newData);
     return newData;
   } catch (err) {
-    console.error("Erro ao inserir dados de identificação:", err.message);
+    console.error("Erro ao inserir novo usuário:", err.message);
     throw err;
   }
 };
@@ -55,22 +55,14 @@ const getUsers = async () => {
     await connectToDb();
     const db = getDb();
     const collectionUsers = db.collection(collection);
+    const users = await collectionUsers.find().toArray()
 
-    const docs = await collectionUsers.find().toArray();
-
-    if (docs.length === 0) {
-      console.log("Nenhum usuário encontrado.");
-      return [];
+    if (users.length === 0) {
+      console.log("Nenhum documento foi encontrado.");
+      return; 
     }
 
-    const USERS = docs.map((user, index) => ({
-      id: index + 1,
-      username: user.email,
-      email: user.email,
-      password: user.password,
-    }));
-
-    return USERS;
+    return users;
 
   } catch (err) {
     console.error("Erro ao buscar usuários:", err.message);
