@@ -1,19 +1,48 @@
 const { connectToDb, getDb, ObjectId } = require('../database.js');
 const collection = 'company_info';
 
-const findCompany = async () => {
+const getInfos = async () => {
   try {
     await connectToDb();
     const bd = getDb();
     const collection_empresas = bd.collection(collection);
-    const find = await collection_empresas.findOne()
+    const infos = await collection_empresas.find().toArray();
 
-    if (find.length === 0) {
+    if (infos.length === 0) {
       console.log("Nenhum documento foi encontrado.");
-      return null; 
+      return
     }
 
-    return find;
+    return infos;
+  } catch (err) {
+    console.error("Erro ao pegar dados de identificação das empresas:", err.message);
+    throw err;
+  }
+}
+
+const findCompany = async (id) => {
+  try {
+    await connectToDb();
+    const bd = getDb();
+    const collection_empresas = bd.collection(collection);
+
+    if (!ObjectId.isValid(id)) {
+      console.log("ID fornecido é inválido.");
+      return null;
+    }
+    try {
+      objectId = ObjectId.createFromHexString(id);
+    } catch (error) {
+      objectId = null;
+    }
+    const info = await collection_empresas.findOne({ _id: objectId});
+
+    if (!info) {
+      console.log("Nenhum documento foi encontrado.");
+      return null;
+    }
+
+    return info;
 
   } catch (err) {
     console.error("Erro ao encontrar empresa:", err.message);
@@ -21,21 +50,22 @@ const findCompany = async () => {
   }
 };
 
-const createInfo = async (nome_empresa, cnpj, razao_social, logo, descricao) => {
+const createInfo = async (user_id, nome_empresa, cnpj, razao_social, logo, descricao) => {
   try {
     await connectToDb();
     const bd = getDb();
     const collection_empresas = bd.collection(collection);
-  
-    const novosDados = {
+
+    const newData = {
+      user_id: user_id,
       nome_empresa: nome_empresa,
       cnpj: cnpj,
       razao_social: razao_social,
       logo: logo,
       descricao: descricao
     }
-    const resultado = await collection_empresas.insertOne(novosDados);
-    return novosDados;
+    await collection_empresas.insertOne(newData);
+    return newData;
   } catch (err) {
     console.error("Erro ao inserir dados de identificação:", err.message);
     throw err;
@@ -75,8 +105,9 @@ const editInfo = async (id, updatedData) => {
 }
 
 module.exports = {
-  findCompany: findCompany,
-  createInfo: createInfo,
-  deleteInfo: deleteInfo,
-  editInfo: editInfo
+  getInfos,
+  findCompany,
+  createInfo,
+  deleteInfo,
+  editInfo
 };
