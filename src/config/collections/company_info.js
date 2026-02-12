@@ -60,7 +60,7 @@ const createInfo = async (user_id, nome_empresa, cnpj, razao_social, logo, descr
     const files = bd.collection('uploads.files').find();
     const chunks = bd.collection('uploads.chunks').find();
 
-    
+    // verificar os files e chunks com objectids sem relação e excluir
 
     const newData = {
       user_id: user_id,

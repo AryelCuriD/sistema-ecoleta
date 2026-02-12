@@ -7,7 +7,6 @@ const createContact = async (user_id, telefone, email, facebook, instagram, link
         const bd = getDb();
         const collection_contact = bd.collection(collection);
 
-        // ver as redes sociais depois
         const newData = {
             user_id: user_id,
             telefone: telefone,

@@ -90,7 +90,7 @@
   color: #4c5d50;
 }
 
-.cadastro-col input[type="text"],
+.cadastro-col input:not([type="file"]),
 .cadastro-col textarea {
   width: 100%;
   box-sizing: border-box;
@@ -102,12 +102,12 @@
   background-color: #ffffff;
 }
 
-.cadastro-col input[type="text"]::placeholder,
+.cadastro-col input:not([type="file"])::placeholder,
 .cadastro-col textarea::placeholder {
   color: #9aa6a0;
 }
 
-.cadastro-col input[type="text"] {
+.cadastro-col input:not([type="file"]) {
   height: 38px;
   margin-bottom: 18px;
 }
@@ -146,6 +146,16 @@
 
 .upload-input {
   display: none;
+}
+
+.upload-box.has-file .upload-icon {
+  display: none;
+}
+
+.upload-box.has-file {
+  gap: 0;
+  color: #4c5d50;
+  font-weight: 600;
 }
 
 .char-count {
@@ -283,10 +293,10 @@
 .pontos-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-height: 280px;
+  gap: 12px;
+  max-height: 300px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 2px;
 }
 
 .ponto-item {
@@ -302,12 +312,18 @@
 }
 
 .ponto-select {
+  width: 100%;
   border: 1px solid #c7c0ae;
   border-radius: 10px;
   padding: 8px 10px;
   font-size: 12px;
+  color: #4c5d50;
   background-color: #ffffff;
-  color: #5f6d5f;
+  appearance: none;
+}
+
+.ponto-select option {
+  color: #4c5d50;
 }
 
 .add-ponto {
@@ -318,60 +334,22 @@
   font-weight: 700;
   align-self: center;
   cursor: pointer;
-  padding: 0;
-}
-
-.ponto-tooltip {
-  background: #ffffff;
-  border: 1px solid #d5d9d4;
-  border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  padding: 8px;
-  color: #4c5d50;
-}
-
-.ponto-tooltip::before {
-  border-top-color: #d5d9d4;
-}
-
-.ponto-tooltip-content {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 160px;
-}
-
-.ponto-tooltip-content img {
-  width: 100%;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.ponto-tooltip-content strong {
-  font-size: 12px;
-}
-
-.ponto-tooltip-content span {
-  font-size: 11px;
-  color: #6b7b6e;
-  line-height: 1.3;
 }
 
 .finalizar-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
   max-width: 420px;
-  margin: 10px auto 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  margin: 6px auto 0;
 }
 
 .finalizar-field label {
   display: block;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: #4c5d50;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .finalizar-field input {
@@ -379,27 +357,18 @@
   box-sizing: border-box;
   border: 1px solid #d5d9d4;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 10px 12px;
   font-size: 13px;
   color: #4c5d50;
   background-color: #ffffff;
 }
 
-.finalizar-field input::placeholder {
-  color: #9aa6a0;
-}
-
-.finalizar-senha {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .finalizar-hint {
   display: block;
-  font-size: 10px;
-  color: #94a19b;
   margin-top: 6px;
+  font-size: 11px;
+  color: #8a9690;
+  line-height: 1.3;
 }
 
 .btn-finalizar {
@@ -407,10 +376,87 @@
   color: #ffffff;
   border: none;
   border-radius: 12px;
-  padding: 10px 32px;
-  font-weight: 600;
+  padding: 10px 30px;
+  font-weight: 700;
   cursor: pointer;
-  min-width: 120px;
+}
+
+.step-feedback {
+  display: none;
+  margin-bottom: 14px;
+  background: #fff7f7;
+  border: 1px solid #f2c7c7;
+  color: #8a3434;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.step-feedback.is-visible {
+  display: block;
+}
+
+.step-feedback strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.step-feedback ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.step-feedback li {
+  margin-bottom: 2px;
+}
+
+.field-invalid {
+  border-color: #d16565 !important;
+  box-shadow: 0 0 0 2px rgba(209, 101, 101, 0.15);
+}
+
+.remove-dynamic-item {
+  align-self: flex-end;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #c7c0ae;
+  border-radius: 8px;
+  background: #fff;
+  color: #8a5d5d;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 12px;
+  padding: 0;
+}
+
+.remove-dynamic-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ponto-tooltip .leaflet-tooltip-content {
+  margin: 0;
+}
+
+.ponto-tooltip-content {
+  width: 170px;
+  text-align: center;
+}
+
+.ponto-tooltip-content img {
+  width: 100%;
+  height: 95px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.ponto-tooltip-content strong {
+  font-size: 12px;
+  color: #2f3e34;
+  line-height: 1.25;
+  display: block;
 }
 
 @media (max-width: 900px) {
@@ -423,6 +469,6 @@
   }
 
   .mapa-coleta {
-    height: 260px;
+    height: 280px;
   }
 }

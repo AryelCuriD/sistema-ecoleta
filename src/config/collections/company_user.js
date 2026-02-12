@@ -1,4 +1,5 @@
 const { connectToDb, getDb, ObjectId } = require('../database.js');
+const verifyAuth = require("../../controllers/verifyAuth.js");
 const collection = 'company_users';
 
 const findUser = async (id) => {
@@ -51,6 +52,7 @@ const registerCompany = async (email, password) => {
 };
 
 const getUsers = async () => {
+  findUserData();
   try {
     await connectToDb();
     const db = getDb();
@@ -70,9 +72,13 @@ const getUsers = async () => {
   }
 };
 
+const findUserData = async (user) => {
+      console.log(user);
+}
 
 module.exports = {
   findUser,
   registerCompany,
-  getUsers
+  getUsers,
+  findUserData
 }

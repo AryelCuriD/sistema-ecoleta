@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecoleta - Perfil da Empresa</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/profile.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+
+<body>
+  <header>
+    <a href="/initial-page"><img src="../images/logo.png" class="logo" alt="Logo Ecoleta"></a>
+    <a class="login" href="/login">Faça Login</a>
+
+    <div class="search-div">
+      <input type="text" placeholder="Encontrar empresas..." class="search">
+      <img src="../images/lupa.png" class="lupa" alt="buscar">
+    </div>
+
+    <a class="info" href="/about">Sobre o Site</a>
+  </header>
+
+  <main class="profile-main">
+    <section class="company-overview card-shell">
+      <div class="company-brand">
+        <div class="logo-placeholder" aria-label="Logo da Klabin">K</div>
+        <div class="company-meta">
+          <h1>Klabin</h1>
+          <p class="company-location">Cascavel - Maria Luiza</p>
+        </div>
+
+        <div class="materials-wrapper">
+          <h2>Materiais coletados:</h2>
+          <div class="material-tags">
+            <span>Plástico</span>
+            <span>Papel</span>
+            <span>Papelão</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="company-description">
+        <h2>Sobre a empresa</h2>
+        <p>
+          Atuamos em todo o ciclo biológico da economia circular, onde tudo o que é extraído é
+          reintegrado à natureza.
+        </p>
+      </div>
+    </section>
+
+    <section class="company-details-grid">
+      <article class="card-shell info-card">
+        <ul class="contact-list">
+          <li>
+            <span class="contact-icon">📞</span>
+            <span>(11) 97654-3210</span>
+          </li>
+          <li>
+            <span class="contact-icon">✉️</span>
+            <span>faleklabinpr@klabin.com.br</span>
+          </li>
+        </ul>
+
+        <div class="social-links">
+          <a href="#" aria-label="Instagram da empresa">@klabin.sa</a>
+          <a href="#" aria-label="LinkedIn da empresa">Klabin</a>
+        </div>
+      </article>
+
+      <article class="card-shell points-card">
+        <h2>Pontos de coleta</h2>
+        <ul id="collection-points-list"></ul>
+      </article>
+    </section>
+
+    <section class="map-section card-shell">
+      <h2>Localização dos pontos de coleta</h2>
+      <div id="mapa-perfil" aria-label="Mapa dos pontos de coleta da empresa em Cascavel"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="direitos">© 2025 Ecoleta. Todos os direitos reservados.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../scripts/profile.js"></script>
+</body>
+
+</html>
