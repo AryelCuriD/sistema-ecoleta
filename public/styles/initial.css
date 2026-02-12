@@ -189,4 +189,8 @@ main {
     color: #ffffff;
     cursor: pointer;
     align-self: flex-start;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }

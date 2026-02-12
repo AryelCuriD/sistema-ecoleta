@@ -10,7 +10,9 @@ const { GridFSBucket, ObjectId } = require('mongodb');
 const { connectToDb, getDb } = require('./config/database.js');
 const { getInfos, findCompany, createInfo, deleteInfo, editInfo } = require('./config/collections/company_info.js');
 const { createContact, getContacts, findContact, editContact, deleteContact } = require('./config/collections/company_contact.js');
-const { findUser, registerCompany, getUsers } = require('./config/collections/company_user.js');
+const { createWaste, editWaste, deleteWaste, getWastes, findWaste } = require('./config/collections/company_waste.js');
+const { createPoints } = require ('./config/collections/company_points.js');
+const { findUser, registerCompany, getUsers, findUserData } = require('./config/collections/company_user.js');
 const cookieParser = require('cookie-parser');
 const verifyAuth = require('./controllers/verifyAuth.js');
 const { error } = require('console');
@@ -46,6 +48,25 @@ app.get('/about', async (req, res) => {
 
 app.get('/sign-in', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/signInPage.html'));
+});
+
+app.get('/profile', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/pages/profilePage.html'));
+});
+
+app.get('/api/verify', verifyAuth, async (req, res) => {
+  console.log('a')
+});
+
+app.get('/userData', verifyAuth, async (req,res) =>{
+  const user = req.user
+  try{  
+    const findData = await findUserData(user);
+    res.status(201).json(findData);
+  }catch (err){
+    console.error(err);
+    res.status(500).json({ error: "Erro ao pegar os dados" });
+  }
 });
 
 //GET
@@ -101,11 +122,40 @@ app.get('/empresas/contato/:id', async (req, res) => {
   }
 });
 
+//GET todos os residuos
+app.get('/empresas/wastes', async (req, res) => {
+  try {
+    const wastes = await getWastes();
+    res.status(200).json(wastes)
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao pegar os resíduos das empresas:", error: err.message });
+  }
+});
+
+//GET residuos especifico
+app.get('/empresas/waste/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const wastes = await findWaste(id)
+
+    if (!wastes) {
+      return res.status(404).json({ message: "resíduos da empresa não encontrados" });
+    }
+
+    res.status(200).json({wastes})
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao pegar os resíduos da empresa:", error: err.message });
+    console.error(err)
+  }
+})
+
 // GET todos os usuários
 app.get('/empresas/users', async (req, res) => {
   try {
     const users = await getUsers();
     res.status(200).json(users);
+    
   } catch (err) {
     res.status(500).json({ error: "Erro ao pegar os usuários:", error: err.message });
   }
@@ -161,9 +211,6 @@ app.post('/api/login', async (req, res) => {
   login(req, res, await getUsers())
 });
 app.post('api/logout', logout)
-app.get('/api/verify', verifyAuth, (req, res) => {
-  res.json({ message: 'acesso permitido a rota protegida', user: req.user })
-});
 
 //Sign in de empresa (Cadastro)
 app.post('/api/signin', async (req, res) => { 
@@ -173,10 +220,13 @@ app.post('/api/signin', async (req, res) => {
     if (!email || !password) return res.status(400).json({ error: 'Email e senha são obrigatórios' });
 
     const users = await getUsers();
-    const userExists = users.find(user => user.email === email);
-    
-    if (userExists) {
-      return res.status(409).json({ error: 'Empresa já cadastrada' });
+  
+    if (users) {
+      const userExists = users.find(user => user.email === email);
+      
+      if (userExists) {
+        return res.status(409).json({ error: 'Empresa já cadastrada' });
+      }
     }
     
     registerCompany(email, bcrypt.hashSync(password, 10));
@@ -291,10 +341,35 @@ app.post('/empresas/contato', async (req, res) => {
   }
 });
 
+// POST residuos da empresa
+app.post('/empresas/waste', async (req, res) => {
+  try {
+    if (!req.body) return res.status(400).json({ error: "dados inválidos" });
+
+    const { user_id, wastes } = req.body
+    if (!user_id || !wastes || wastes == []) return res.status(400).json({ error: "Campos obrigatórios estão faltando." });
+
+    const newWastes = createWaste(user_id, wastes)
+
+    if (!newWastes) return res.status(500).json({ error: 'Erro ao criar resíduos da empresa' });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao criar resíduos:', error: err.message });
+  }
+});
+
+app.post('/empresas/points', async (req, res) => {
+  try {
+    if (!req.body) return res.status(400).json({ error: 'dados inválidos' });
+
+    const { user_id, points } = req.body
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao criar pontos de coleta:', error: err.message });
+  }
+})
+
 //PUT
 
 // Editar dados básicos das empresas
-
 app.put("/empresas/info/:info_id", upload.single("logo"), async (req, res) => {
   try {
     const { info_id } = req.params;
@@ -324,7 +399,7 @@ app.put("/empresas/info/:info_id", upload.single("logo"), async (req, res) => {
       uploadStream.end(req.file.buffer);
 
       uploadStream.on("finish", async () => {
-        const fileId = uploadStream.id; // agora é o mesmo _id em upload.files
+        const fileId = uploadStream.id;
         updateFields.logo = fileId;
 
         const updated = await editInfo(info_id, updateFields);
@@ -405,6 +480,22 @@ app.put('/empresas/contato/:id', async (req, res) => {
   }
 })
 
+app.put('/empresas/waste/:id', async (req, res) => {
+  try {
+    if (!req.body) return res.status(400).json({ error: 'Dados inválidos' });
+    const id = req.params
+    const { wastes } = req.body
+
+    if (!wastes || wastes == []) return res.status(500).json({ error: "Campos obrigatórios estão faltando." });
+
+    const newWastes = editWaste(id, wastes)
+
+    if (!newWastes) return res.status(500).json({ error: 'Erro ao editar resíduos da empresa' });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao editar resíduos da empresa." });
+  }
+})
+
 //DELETE
 
 // Excluir dados básicos das empresas
@@ -428,6 +519,7 @@ app.delete('/empresas/info/:id', async (req, res) => {
   }
 });
 
+// Deletar contatos da empresa
 app.delete('/empresas/contato/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -443,6 +535,31 @@ app.delete('/empresas/contato/:id', async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ error: "Erro ao excluir dados de contato da empresa:", error: err.message });
+  }
+})
+
+app.delete('/empresas/waste/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+
+    if (!id) return res.status(400).json({ error: "ID da empresa é obrigatório." });
+
+    const result = await deleteWaste(id)
+    if (result) {
+      res.status(200).json({ message: "Resíduos da empresa excluídos com sucesso." });
+    } else {
+      res.status(404).json({ error: "Resíduos da empresa não encontrados." });
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao excluir dados de contato da empresa:", error: err.message });
+  }
+})
+
+app.delete('/empresas/user/:id', async (req, res) => {
+  try {
+
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao excluir usuário:", error: err.message })
   }
 })
 
