@@ -4,15 +4,14 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const login = require('./controllers/login.js');
 const logout = require('./controllers/logout.js');
-const auth = require('./controllers/verifyAuth.js');
 const multer = require('multer');
 const { GridFSBucket, ObjectId } = require('mongodb');
 const { connectToDb, getDb } = require('./config/database.js');
 const { getInfos, findCompany, createInfo, deleteInfo, editInfo } = require('./config/collections/company_info.js');
 const { createContact, getContacts, findContact, editContact, deleteContact } = require('./config/collections/company_contact.js');
 const { createWaste, editWaste, deleteWaste, getWastes, findWaste } = require('./config/collections/company_waste.js');
-const { createPoints } = require ('./config/collections/company_points.js');
-const { findUser, registerCompany, getUsers, findUserData } = require('./config/collections/company_user.js');
+const { createPoints, editPoints, deletePoints, getPoints, findPoints } = require ('./config/collections/company_points.js');
+const { findUser, registerCompany, getUsers, deleteUser, findUserData } = require('./config/collections/company_user.js');
 const cookieParser = require('cookie-parser');
 const verifyAuth = require('./controllers/verifyAuth.js');
 const { error } = require('console');
@@ -54,22 +53,27 @@ app.get('/profile', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/profilePage.html'));
 });
 
-app.get('/api/verify', verifyAuth, async (req, res) => {
-  console.log('a')
+app.get('/own-profile', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/pages/ownProfilePage.html'));
 });
 
-app.get('/userData', verifyAuth, async (req,res) =>{
+app.get('/delete-profile', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/pages/deleteProfilePage.html'));
+});
+
+//GET
+
+app.get('/user-data', verifyAuth, async (req, res) =>{
   const user = req.user
   try{  
-    const findData = await findUserData(user);
-    res.status(201).json(findData);
+    const allData = await findUserData(user);
+    res.status(201).json(allData);
   }catch (err){
     console.error(err);
     res.status(500).json({ error: "Erro ao pegar os dados" });
   }
 });
 
-//GET
 
 // GET dados básicos das empresas
 app.get('/empresas/infos', async (req, res) => {
@@ -96,7 +100,7 @@ app.get('/empresas/info/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Erro ao pegar os dados de identificação da empresa:", error: err.message });
   }
-})
+});
 
 //GET dados de contato das empresas
 app.get('/empresas/contatos', async (req, res) => {
@@ -147,6 +151,33 @@ app.get('/empresas/waste/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Erro ao pegar os resíduos da empresa:", error: err.message });
     console.error(err)
+  }
+})
+
+//GET todos os pontos de coleta
+app.get('/empresas/points', async (req, res) => {
+  try {
+    const points = await getPoints();
+    res.status(200).json(points);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao pegar todos os pontos de coleta:", error: err.message });
+  }
+})
+
+//GET pontos de coleta especifco
+app.get('/empresa/points/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const points = await findPoints(id)
+
+    if (!points) {
+      return res.status(404).json({ message: "Pontos de coleta da empresa não encontrados" });
+    }
+
+    res.status(200).json(points)
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao pegar o pontos de coleta:", error: err.message });
   }
 })
 
@@ -361,7 +392,12 @@ app.post('/empresas/points', async (req, res) => {
   try {
     if (!req.body) return res.status(400).json({ error: 'dados inválidos' });
 
-    const { user_id, points } = req.body
+    const { user_id, points } = req.body;
+    if (!user_id || !points || points == []) return res.status(400).json({ error: "Campos obrigatórios estão faltando." });
+
+    const newPoints = await createPoints(user_id, points)
+
+    if (!newPoints) return res.status(500).json({ error: "erro ao criar pontos de coleta" })
   } catch (err) {
     res.status(500).json({ error: 'Erro ao criar pontos de coleta:', error: err.message });
   }
@@ -496,6 +532,22 @@ app.put('/empresas/waste/:id', async (req, res) => {
   }
 })
 
+app.put('/empresa/points/:id', async (req, res) => {
+  try {
+    if (!req.body) return res.status(400).json({ error: 'Dados inválidos' });
+    const id = req.params
+    const { points } = req.body
+
+    if (!points || points == []) return res.status(500).json({ error: "Campos obrigatórios estão faltando." });
+
+    const newPoints = editPoints(id, points)
+
+    if (!newPoints) return res.status(500).json({ error: 'Erro ao editar pontos de coleta da empresa' });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao editar pontos de coleta da empresa:", error: err.message });
+  }
+});
+
 //DELETE
 
 // Excluir dados básicos das empresas
@@ -555,9 +607,35 @@ app.delete('/empresas/waste/:id', async (req, res) => {
   }
 })
 
-app.delete('/empresas/user/:id', async (req, res) => {
+app.delete('/empresa/points/:id', async (req, res) => {
   try {
+    const { id } = req.params
 
+    if (!id) return res.status(400).json({ error: "ID da empresa é obrigatório." });
+
+    const result = await deletePoints(id)
+    if (result) {
+      res.status(200).json({ message: "Pontos de coleta da empresa excluídos com sucesso." });
+    } else {
+      res.status(404).json({ error: "Pontos de coleta da empresa não encontrados." });
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao excluir pontos de coleta da empresa:", error: err.message });
+  }
+});
+
+app.delete('/empresa/user/:id', async (req, res) => {
+  try {
+    const{ id } = req.params;
+
+    if (!id) return res.status(400).json({ error: "ID é obrigatório." });
+
+    const result = await deleteUser(id)
+    if (result) {
+      res.status(200).json({ message: "Usuário excluído com sucesso." });
+    } else {
+      res.status(404).json({ error: "Usuário não encontrados." });
+    }
   } catch (err) {
     res.status(500).json({ error: "Erro ao excluir usuário:", error: err.message })
   }

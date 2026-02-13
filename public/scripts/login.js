@@ -20,6 +20,7 @@ form.addEventListener('submit', async (e) => {
         if (res.ok) {
             console.log('Login bem-sucedido:', msg);
             errorMsg.style.display = 'none';
+            window.location.href = '/own-profile'; //nao esquecer de mudar
         } else {
             console.error('Erro no login:', msg);
             errorMsg.textContent = msg.error || 'Erro no login. Tente novamente.';

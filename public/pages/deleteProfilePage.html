@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecoleta - Excluir Perfil</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/deleteProfile.css">
+</head>
+
+<body>
+  <header>
+    <a href="/initial-page"><img src="../images/logo.png" class="logo" alt="Logo Ecoleta"></a>
+    <a class="login" href="/login">Faça Login</a>
+
+    <div class="search-div">
+      <input type="text" placeholder="Encontrar Empresas" class="search">
+      <img src="../images/lupa.png" class="lupa" alt="buscar">
+    </div>
+
+    <a class="info" href="/about">Sobre o Site</a>
+  </header>
+
+  <main class="delete-main">
+    <section class="delete-topo">
+      <img src="../images/logo.png" alt="Ecoleta" class="delete-logo">
+      <h1 class="delete-titulo">Excluir Perfil</h1>
+      <p class="delete-subtitulo">Para excluir seu perfil digite seu e-mail e senha</p>
+    </section>
+
+    <section class="delete-card">
+      <form class="delete-form" id="delete-profile-form" action="#" method="post">
+        <label class="delete-label" for="delete-email">E-mail</label>
+        <input class="delete-input" type="email" id="delete-email" name="email" placeholder="seu@email.com" required>
+
+        <label class="delete-label" for="delete-password">Senha</label>
+        <input class="delete-input" type="password" id="delete-password" name="senha" placeholder="**********" required>
+
+        <button class="delete-button" type="submit">EXCLUIR PERFIL</button>
+
+        <p class="delete-warning">
+          Isso irá excluir seu perfil permanentemente, você não conseguirá recuperar ele depois desta ação
+        </p>
+      </form>
+    </section>
+
+    <a class="delete-voltar" href="/initial-page">← Voltar à página inicial</a>
+  </main>
+
+  <div class="modal-overlay hidden" id="confirm-overlay" aria-hidden="true">
+    <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Confirmar exclusão</h2>
+      <p>Essa ação não pode ser desfeita. Deseja realmente excluir seu perfil?</p>
+      <div class="modal-actions">
+        <button type="button" class="modal-button confirm" id="confirm-delete-button">Confirmar</button>
+        <button type="button" class="modal-button cancel" id="cancel-delete-button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="direitos">© 2025 - Ecoleta - Todos os direitos reservados</p>
+  </footer>
+
+  <script src="../scripts/deleteProfile.js"></script>
+</body>
+
+</html>

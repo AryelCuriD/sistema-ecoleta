@@ -33,8 +33,8 @@ const editWaste = async (id, wastes) => {
             { _id: new ObjectId(id) },
             { $set: {
                 wastes: wastes
-            } }
-        );
+            } 
+        });
         return result.modifiedCount > 0;
     } catch (err) {
         console.error(err)

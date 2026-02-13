@@ -14,7 +14,7 @@ module.exports = async (req, res, USERS) => {
   }
   const senhaValida = await bcrypt.compare(password, user.password);
   if (!senhaValida) return res.status(401).json({ error: 'Senha incorreta' });
-  const payload = { id: user.id, username: user.email, name: null };
+  const payload = { id: String(user._id), email: user.email };
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
   res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
   res.json({ message: 'Login realizado com sucesso' });
