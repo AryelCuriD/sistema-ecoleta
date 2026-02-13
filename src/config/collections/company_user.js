@@ -72,13 +72,56 @@ const getUsers = async () => {
   }
 };
 
+const deleteUser = async (id) => {
+  try {
+    await connectToDb();
+    const db = getDb();
+    const collection_users = db.collection(collection);
+
+    const result = await collection_users.deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount > 0
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 const findUserData = async (user) => {
-      console.log(user);
+  try {
+    await connectToDb();
+    const db = getDb();
+
+    //collections
+    const collection_info = db.collection('company_info');
+    const collection_contact = db.collection('company_contact');
+    const collection_waste = db.collection('company_wastes');
+    const collection_points = db.collection('company_points');
+    const collection_user = db.collection('company_users');
+
+    const user_id = user["id"]
+    
+    const company_info = await collection_info.findOne({ user_id });
+    const company_contact = await collection_contact.findOne({ user_id });
+    const company_waste = await collection_waste.findOne({ user_id });
+    const company_points = await collection_points.findOne({ user_id });
+    const company_user = await collection_user.findOne({ user_id });
+
+    return {
+      info: company_info,
+      contact: company_contact,
+      wastes: company_waste,
+      points: company_points,
+      user: company_user
+    }
+
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 module.exports = {
   findUser,
   registerCompany,
   getUsers,
+  deleteUser,
   findUserData
 }
