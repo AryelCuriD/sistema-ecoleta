@@ -24,7 +24,6 @@ const findUser = async (id) => {
       return null;
     }
 
-    console.log("Usuário encontrado:", user);
     return user;
 
   } catch (err) {
@@ -90,12 +89,12 @@ const findUserData = async (user) => {
     await connectToDb();
     const db = getDb();
 
-    //collections
     const collection_info = db.collection('company_info');
     const collection_contact = db.collection('company_contact');
-    const collection_waste = db.collection('company_wastes');
+    const collection_waste = db.collection('company_waste');
     const collection_points = db.collection('company_points');
-    const collection_user = db.collection('company_users');
+
+    if (!user || !user["id"]) return;
 
     const user_id = user["id"]
     
@@ -103,14 +102,12 @@ const findUserData = async (user) => {
     const company_contact = await collection_contact.findOne({ user_id });
     const company_waste = await collection_waste.findOne({ user_id });
     const company_points = await collection_points.findOne({ user_id });
-    const company_user = await collection_user.findOne({ user_id });
-
+    
     return {
       info: company_info,
       contact: company_contact,
       wastes: company_waste,
       points: company_points,
-      user: company_user
     }
 
   } catch (err) {

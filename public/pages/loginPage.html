@@ -13,7 +13,8 @@
 
     <header>
       <a href="/initial-page"><img src="../images/logo.png" class="logo"></a>
-      <a class="login">Faça Login</a>
+      <a class="login" href="/login">Faça Login</a>
+      <a href="/own-profile"><img class="profile" src="../images/profile.png"></a>
 
     <div class="search-div">
       <input type="text" placeholder="Encontrar Empresas" class="search">
@@ -54,10 +55,10 @@
           required
         />
 
-        <p class="error-msg"></p> <!-- Mensagem de erro -->
+        <p class="error-msg"></p>
 
         <label class="login-lembrar">
-          <input type="checkbox" name="lembrar" />
+          <input type="checkbox" name="lembrar" id="remember-me"/>
           <span>Lembrar de mim</span>
         </label>
 
