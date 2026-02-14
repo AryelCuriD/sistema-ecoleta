@@ -1,9 +1,38 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const points = [
-    { name: 'Cascavel - Ecoponto Cascavel Velho', coords: [-24.9818, -53.4297] },
-    { name: 'Cascavel - Ecoponto Brasília - Unicacoop', coords: [-24.935105, -53.430030] },
-    { name: 'Cascavel - Ambiental Cascavel', coords: [-24.9558, -53.4550] },
-  ];
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search)
+  const user_id = params.get('id');
+  
+  const data = await getUserData(user_id);
+  const logo = await getCompanyLogo(data.info.logo);
+  const imageElement = document.querySelector('.logo-placeholder');
+  const companyName = document.querySelector('#company-name');
+  const materialTags = document.querySelector('.material-tags');
+  const companyDesc = document.querySelector('#company-desc');
+  const phone = document.querySelector('#phone');
+  const email = document.querySelector('#email');
+
+  const facebook = document.querySelector('#facebook');
+  const instagram = document.querySelector('#instagram');
+  const linkedin = document.querySelector('#linkedin');
+  const x = document.querySelector('#x');
+
+  materialTags.innerHTML = ''
+  data.wastes.wastes.forEach(waste => {
+    materialTags.innerHTML += `
+    <span>${stripHTMLTags(waste)}</span>
+    `
+  });
+  const points = data.points.points
+  imageElement.src = URL.createObjectURL(logo)
+  companyName.textContent = stripHTMLTags(data.info.nome_empresa)
+  companyDesc.textContent = stripHTMLTags(data.info.descricao)
+  phone.textContent = stripHTMLTags(data.contact.telefone)
+  email.textContent = stripHTMLTags(data.contact.email)
+
+  facebook.href = stripHTMLTags(data.contact.social_media.facebook)
+  instagram.href = stripHTMLTags(data.contact.social_media.instagram)
+  linkedin.href = stripHTMLTags(data.contact.social_media.linkedin)
+  x.href = stripHTMLTags(data.contact.social_media.twitter)
 
   const list = document.getElementById('collection-points-list');
   if (list) {

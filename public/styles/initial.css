@@ -135,11 +135,8 @@ main {
 }
 
 .card-imagem {
-    width: 120px;
     height: 120px;
     border-radius: 12px;
-    background-color: #e6efe5;
-    color: #365C45;
     display: flex;
     align-items: center;
     justify-content: center;

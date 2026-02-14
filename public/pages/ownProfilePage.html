@@ -14,6 +14,7 @@
   <header>
     <a href="/initial-page"><img src="../images/logo.png" class="logo" alt="Logo Ecoleta"></a>
     <a class="login" href="/login">Faça Login</a>
+    <a href="/own-profile"><img class="profile" src="../images/profile.png"></a>
 
     <div class="search-div">
       <input type="text" placeholder="Encontrar empresas..." class="search">
@@ -35,29 +36,23 @@
 
     <section class="company-overview card-shell">
       <div class="company-brand">
-        <div class="logo-placeholder" aria-label="Logo da Klabin">K</div>
+        <img class="logo-placeholder"></img>
         <div class="company-meta">
-          <h1>Klabin</h1>
-          <p class="company-location">Cascavel - Maria Luiza</p>
+          <h1 id="company-name"></h1>
+          <p class="company-location">Cascavel</p>
         </div>
 
         <div class="materials-wrapper">
           <h2>Materiais coletados:</h2>
           <div class="material-tags">
-            <span>Plástico</span>
-            <span>Papel</span>
-            <span>Papelão</span>
-            <span>Mais 5+</span>
+            
           </div>
         </div>
       </div>
 
       <div class="company-description">
         <h2>Sobre a empresa</h2>
-        <p>
-          Atuamos em todo o ciclo biológico da economia circular, onde tudo o que é extraído é
-          reintegrado à natureza.
-        </p>
+        <p id="company-desc"></p>
       </div>
     </section>
 
@@ -66,17 +61,19 @@
         <ul class="contact-list">
           <li>
             <span class="contact-icon">📞</span>
-            <span>(11) 97654-3210</span>
+            <span id="phone"></span>
           </li>
           <li>
             <span class="contact-icon">✉️</span>
-            <span>faleklabinpr@klabin.com.br</span>
+            <span id="email"></span>
           </li>
         </ul>
 
         <div class="social-links">
-          <a href="#" aria-label="Instagram da empresa">@klabin.sa</a>
-          <a href="#" aria-label="LinkedIn da empresa">Klabin</a>
+          <a href="#" id="facebook"><img class="social-media-img" src="../images/social-media/facebook.png"> </a>
+          <a href="#" id="instagram"><img class="social-media-img" src="../images/social-media/instagram.png"></a>
+          <a href="#" id="linkedin"><img class="social-media-img" src="../images/social-media/linkedin.png"></a>
+          <a href="#" id="x"><img class="social-media-img" src="../images/social-media/twitter.png"></a>
         </div>
       </article>
 
@@ -98,6 +95,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="../scripts/ownProfile.js"></script>
+  <script src="../scripts/utils.js"></script>
 </body>
 
 </html>

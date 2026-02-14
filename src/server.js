@@ -53,15 +53,23 @@ app.get('/profile', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/profilePage.html'));
 });
 
-app.get('/own-profile', async (req, res) => {
+app.get('/own-profile', verifyAuth, async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/ownProfilePage.html'));
-});
+})
 
-app.get('/delete-profile', async (req, res) => {
+app.get('/delete-profile', verifyAuth, async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/deleteProfilePage.html'));
 });
 
+app.get('/edit-profile', verifyAuth, async (req, res) => {
+  // qndo tiver bota
+})
+
 //GET
+
+app.get('/api/me', verifyAuth, async (req, res) => {
+  res.status(200).json({ logged: true, user: req.user });
+})
 
 app.get('/user-data', verifyAuth, async (req, res) =>{
   const user = req.user
@@ -74,6 +82,15 @@ app.get('/user-data', verifyAuth, async (req, res) =>{
   }
 });
 
+app.get('/empresa/data/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const allData = await findUserData({ id: id });
+    res.status(201).json(allData);
+  } catch (err) {
+    res.status(500).json({ error: "erro ao pegar os dados da empresa:", error: err.message })
+  }
+})
 
 // GET dados básicos das empresas
 app.get('/empresas/infos', async (req, res) => {
@@ -241,7 +258,8 @@ app.get("/empresas/logo/:id", async (req, res) => {
 app.post('/api/login', async (req, res) => {
   login(req, res, await getUsers())
 });
-app.post('api/logout', logout)
+
+app.post('/api/logout', logout)
 
 //Sign in de empresa (Cadastro)
 app.post('/api/signin', async (req, res) => { 

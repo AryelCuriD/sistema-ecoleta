@@ -44,7 +44,7 @@ header {
     background-color: #6fbf73;
     border-radius: 15px;
     
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     margin-left: 100px;
@@ -55,6 +55,18 @@ header {
 }
 
 .login:hover {
+    cursor: pointer;
+}
+
+.profile {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 100px;
+}
+
+.profile:hover {
     cursor: pointer;
 }
 

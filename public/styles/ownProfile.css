@@ -59,11 +59,8 @@
 }
 
 .logo-placeholder {
-  width: 120px;
-  height: 80px;
+  height: 120px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #0d9e57, #2bb673);
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,6 +163,10 @@
   color: #3f6270;
   font-weight: 700;
   text-decoration: none;
+}
+
+.social-media-img {
+  height: 28px;
 }
 
 .points-card ul {
