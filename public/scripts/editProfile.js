@@ -1,29 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const validateCNPJ = (cnpj) => {
-    cnpj = cnpj.replace(/[^\d]+/g, '');
-    if (cnpj.length !== 14 || !!cnpj.match(/(\d)\1{13}/)) return false;
-
-    const size = cnpj.length - 2;
-    const numbers = cnpj.substring(0, size);
-    const digits = cnpj.substring(size);
-
-    const calc = (s) => {
-      let sum = 0;
-      let pos = s.length - 7;
-      for (let i = s.length; i >= 1; i--) {
-        sum += s.charAt(s.length - i) * pos--;
-        if (pos < 2) pos = 9;
-      }
-      const res = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-      return res;
-    };
-
-    const digit1 = calc(numbers);
-    const digit2 = calc(numbers + digit1);
-
-    return digit1 === Number(digits[0]) && digit2 === Number(digits[1]);
-  };
-
   const socialFieldRules = {
     facebook: /^https?:\/\/(www\.)?facebook\.com\/.+/i,
     instagram: /^https?:\/\/(www\.)?instagram\.com\/.+/i,
@@ -31,17 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     twitter: /^https?:\/\/(www\.)?(x|twitter)\.com\/.+/i,
   };
 
-  const cnpjInput = document.getElementById('cnpj');
   const phoneInput = document.getElementById('telefone');
-
-  const formatCNPJ = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 14);
-    return digits
-      .replace(/(\d{2})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1/$2')
-      .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-  };
+  const descriptionField = document.getElementById('descricao');
+  const charCount = document.querySelector('.char-count');
+  const logoInput = document.getElementById('logo');
+  const logoUploadBox = document.querySelector('.upload-box');
+  const logoUploadText = document.getElementById('logo-upload-text');
+  const allowedLogoTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+  const LOGO_MAX_DIMENSION = 512;
 
   const formatPhone = (value) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -68,31 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return value.replace(trimmedStart.charAt(0), firstChar);
   };
 
-  cnpjInput?.addEventListener('input', () => {
-    cnpjInput.value = formatCNPJ(cnpjInput.value);
-  });
-
   phoneInput?.addEventListener('input', () => {
     phoneInput.value = formatPhone(phoneInput.value);
   });
 
-  const logoInput = document.getElementById('logo');
-  const logoUploadBox = document.querySelector('.upload-box');
-  const logoUploadText = document.getElementById('logo-upload-text');
-  const descricaoInput = document.getElementById('descricao');
-  const charCount = document.querySelector('.char-count');
-  const corporateEmailInput = document.getElementById('email-corporativo');
-  const finalEmailInput = document.getElementById('email-final');
-  const passwordInput = document.getElementById('senha-final');
-  const passwordConfirmInput = document.getElementById('confirmar-senha-final');
-  const allowedLogoTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-
   const logoWarning = document.createElement('small');
   logoWarning.className = 'logo-upload-warning';
-  logoWarning.style.display = 'none';
-  logoWarning.style.color = '#c74646';
-  logoWarning.style.fontSize = '12px';
-  logoWarning.style.marginTop = '8px';
   logoWarning.setAttribute('role', 'alert');
   logoWarning.setAttribute('aria-live', 'polite');
   logoUploadBox?.insertAdjacentElement('afterend', logoWarning);
@@ -109,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showLogoWarning('');
   };
 
-  const LOGO_MAX_DIMENSION = 512;
   const getLogoValidationMessage = ({ isSquare, isWithinMaxSize }) => {
     if (!isSquare) {
       return 'A logo deve ser quadrada (largura igual à altura).';
@@ -149,18 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
     image.src = imageUrl;
   });
 
-  const updateDescriptionCounter = () => {
-    if (!descricaoInput || !charCount) return;
-    const currentLength = descricaoInput.value.length;
-    charCount.textContent = `${currentLength}/1000 caracteres`;
-  };
-
-  if (descricaoInput) {
-    descricaoInput.maxLength = 1000;
-    descricaoInput.addEventListener('input', updateDescriptionCounter);
-    updateDescriptionCounter();
-  }
-
   logoInput?.addEventListener('change', async () => {
     const selectedFile = logoInput.files?.[0];
     if (!selectedFile) {
@@ -195,7 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
     logoUploadBox?.classList.add('has-file');
   });
 
-  const isValidPassword = (value) => /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
+  const updateDescriptionCount = () => {
+    if (!descriptionField || !charCount) return;
+    descriptionField.maxLength = 1000;
+    charCount.textContent = `${descriptionField.value.length}/1000 caracteres`;
+  };
+
+  descriptionField?.addEventListener('input', updateDescriptionCount);
+  updateDescriptionCount();
 
   const createFeedback = () => {
     const feedback = document.createElement('div');
@@ -209,8 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('[data-step="1"]'),
     document.querySelector('[data-step="2"]'),
     document.querySelector('[data-step="3"]'),
-    document.querySelector('[data-step="4"]'),
-    document.querySelector('[data-step="5"]'),
   ];
 
   const showStep = (index) => {
@@ -219,8 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
       step.classList.toggle('is-hidden', stepIndex !== index);
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (index === 3) {
-      window.dispatchEvent(new Event('cadastro:step4'));
+
+    if (index === 2) {
+      window.dispatchEvent(new Event('edicao:step3'));
     }
   };
 
@@ -231,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const label = step.querySelector(`label[for="${id}"]`);
       if (label) return label.textContent.trim();
     }
-    const item = field.closest('.residuo-item, .ponto-item, .finalizar-field, .cadastro-col');
+    const item = field.closest('.residuo-item, .ponto-item, .edit-col');
     const itemLabel = item?.querySelector('.residuo-label, .ponto-label, label');
     return itemLabel?.textContent?.trim() || field.getAttribute('placeholder') || 'Campo obrigatório';
   };
@@ -246,65 +192,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const feedback = step.querySelector('.step-feedback') || createFeedback();
     if (!feedback.parentElement) {
-      const actions = step.querySelector('.cadastro-acoes');
+      const actions = step.querySelector('.edit-acoes');
       actions?.insertAdjacentElement('beforebegin', feedback);
     }
 
     const invalidMessages = [];
-    const textFields = step.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea');
-    textFields.forEach((field) => {
-      const isInvalid = !field.value.trim();
-      markFieldValidity(field, isInvalid);
-      if (isInvalid) {
-        field.setCustomValidity('Preencha este campo.');
-        invalidMessages.push(getFieldLabel(field, step));
-      } else {
-        field.setCustomValidity('');
-      }
-    });
-
-    const fileInputs = step.querySelectorAll('input[type="file"]');
-    for (const field of fileInputs) {
-      const isInvalid = !field.files?.length;
-      const hasInvalidType = !!field.files?.length && !allowedLogoTypes.includes(field.files[0].type);
-      if (hasInvalidType) {
-        markFieldValidity(field, true);
-        field.setCustomValidity('Envie apenas arquivos PNG, JPG ou JPEG para a logo.');
-        invalidMessages.push('Logo da empresa deve ser PNG, JPG ou JPEG.');
-        continue;
-      }
-
-      if (field.files?.length) {
-        const logoValidation = await validateSquareImage(field.files[0]);
-        if (!logoValidation.valid) {
-          markFieldValidity(field, true);
-          field.setCustomValidity(getLogoValidationMessage(logoValidation));
-          invalidMessages.push(getLogoValidationMessage(logoValidation));
-          continue;
-        }
-      }
-
-      if (isInvalid) invalidMessages.push(getFieldLabel(field, step));
-      markFieldValidity(field, isInvalid);
-      field.setCustomValidity(isInvalid ? 'Selecione um arquivo.' : '');
-    }
 
     if (index === 0) {
-      const cnpjField = step.querySelector('#cnpj');
-      const isCnpjValid = validateCNPJ(cnpjField?.value || '');
-      if (cnpjField && !isCnpjValid) {
-        markFieldValidity(cnpjField, true);
-        cnpjField.setCustomValidity('Digite um CNPJ válido.');
-        invalidMessages.push('CNPJ inválido.');
-      }
-    }
+      const requiredFields = step.querySelectorAll('input[type="text"], input[type="email"], textarea');
+      requiredFields.forEach((field) => {
+        const isInvalid = !field.value.trim();
+        markFieldValidity(field, isInvalid);
+        if (isInvalid) {
+          field.setCustomValidity('Preencha este campo.');
+          invalidMessages.push(getFieldLabel(field, step));
+        } else {
+          field.setCustomValidity('');
+        }
+      });
 
-    if (index === 1) {
-      const phoneField = step.querySelector('#telefone');
-      if (phoneField && !isValidPhone(phoneField.value)) {
-        markFieldValidity(phoneField, true);
-        phoneField.setCustomValidity('Digite um telefone válido com DDD.');
-        invalidMessages.push('Telefone inválido.');
+      const fileInputs = step.querySelectorAll('input[type="file"]');
+      for (const field of fileInputs) {
+        const isInvalid = !field.files?.length;
+        const hasInvalidType = !!field.files?.length && !allowedLogoTypes.includes(field.files[0].type);
+
+        if (hasInvalidType) {
+          markFieldValidity(field, true);
+          field.setCustomValidity('Envie apenas arquivos PNG, JPG ou JPEG para a logo.');
+          invalidMessages.push('Logo da empresa deve ser PNG, JPG ou JPEG.');
+          continue;
+        }
+
+        if (field.files?.length) {
+          const logoValidation = await validateSquareImage(field.files[0]);
+          if (!logoValidation.valid) {
+            markFieldValidity(field, true);
+            const logoMessage = getLogoValidationMessage(logoValidation);
+            field.setCustomValidity(logoMessage);
+            invalidMessages.push(logoMessage);
+            continue;
+          }
+        }
+
+        if (isInvalid) {
+          invalidMessages.push('Logo da empresa');
+          field.setCustomValidity('Selecione um arquivo.');
+        } else {
+          field.setCustomValidity('');
+        }
+        markFieldValidity(field, isInvalid);
       }
 
       const emailField = step.querySelector('#email-corporativo');
@@ -314,20 +250,30 @@ document.addEventListener('DOMContentLoaded', () => {
         invalidMessages.push('E-mail corporativo inválido.');
       }
 
+      const phoneField = step.querySelector('#telefone');
+      if (phoneField && !isValidPhone(phoneField.value)) {
+        markFieldValidity(phoneField, true);
+        phoneField.setCustomValidity('Digite um telefone válido com DDD.');
+        invalidMessages.push('Telefone inválido.');
+      }
+
       Object.entries(socialFieldRules).forEach(([id, pattern]) => {
         const field = step.querySelector(`#${id}`);
         if (!field) return;
         const value = field.value.trim();
-        const isValidSocialUrl = pattern.test(value);
-        if (!isValidSocialUrl) {
+        if (!value) return;
+
+        if (!pattern.test(value)) {
           markFieldValidity(field, true);
           field.setCustomValidity('Informe um link completo, com / e nome da conta.');
           invalidMessages.push(`${getFieldLabel(field, step)} deve conter um link completo com o nome da conta.`);
+        } else {
+          field.setCustomValidity('');
         }
       });
     }
 
-    if (index === 2) {
+    if (index === 1) {
       const residuosInputs = Array.from(step.querySelectorAll('.residuo-item input'));
       const filledResiduos = residuosInputs.filter((input) => input.value.trim().length > 0);
       if (!filledResiduos.length) {
@@ -354,9 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    if (index === 3) {
-      const selectedPontos = Array.from(step.querySelectorAll('.ponto-select'))
-        .filter((select) => select.value);
+    if (index === 2) {
+      const selectedPontos = Array.from(step.querySelectorAll('.ponto-select')).filter((select) => select.value);
       if (!selectedPontos.length) {
         invalidMessages.push('Selecione pelo menos 1 ponto de coleta.');
       }
@@ -365,29 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (new Set(pointValues).size !== pointValues.length) {
         invalidMessages.push('Não selecione o mesmo ponto de coleta mais de uma vez.');
         selectedPontos.forEach((select) => markFieldValidity(select, true));
-      }
-    }
-
-    if (index === 4) {
-      const corporateEmail = corporateEmailInput?.value.trim().toLowerCase();
-      const finalEmail = finalEmailInput?.value.trim().toLowerCase();
-
-      if (finalEmailInput && corporateEmail && finalEmail === corporateEmail) {
-        markFieldValidity(finalEmailInput, true);
-        finalEmailInput.setCustomValidity('O e-mail de login deve ser diferente do e-mail corporativo.');
-        invalidMessages.push('O e-mail de login deve ser diferente do e-mail corporativo.');
-      }
-
-      if (passwordInput && !isValidPassword(passwordInput.value)) {
-        markFieldValidity(passwordInput, true);
-        passwordInput.setCustomValidity('A senha deve ter no mínimo 8 caracteres, com 1 letra maiúscula e 1 número.');
-        invalidMessages.push('Senha fora do padrão mínimo de segurança.');
-      }
-
-      if (passwordConfirmInput && passwordInput && passwordConfirmInput.value !== passwordInput.value) {
-        markFieldValidity(passwordConfirmInput, true);
-        passwordConfirmInput.setCustomValidity('As senhas devem ser iguais.');
-        invalidMessages.push('A confirmação de senha deve ser igual à senha informada.');
       }
     }
 
@@ -404,132 +326,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <ul>${uniqueMessages.map((message) => `<li>${message}</li>`).join('')}</ul>
     `;
 
-    const firstInvalid = step.querySelector('.field-invalid, input[type="text"]:invalid, input[type="email"]:invalid, input[type="password"]:invalid, textarea:invalid');
+    const firstInvalid = step.querySelector('.field-invalid, input:invalid, textarea:invalid');
     firstInvalid?.reportValidity();
     firstInvalid?.focus();
     return false;
-  };
-
-  const getSignInPayload = () => {
-    const selectedWastes = Array.from(document.querySelectorAll('.residuo-item input'))
-      .map((input) => input.value.trim())
-      .filter(Boolean);
-
-    const selectedPoints = Array.from(document.querySelectorAll('.ponto-select'))
-      .map((select) => pontosByName.get(select.value))
-      .filter(Boolean)
-      .map((ponto) => ({
-        name: ponto.name,
-        image_path: ponto.image,
-        coords: ponto.coords,
-      }));
-
-    return {
-      info: {
-        nome_empresa: document.getElementById('nome-empresa')?.value.trim() || '',
-        cnpj: document.getElementById('cnpj')?.value.trim() || '',
-        razao_social: document.getElementById('razao-social')?.value.trim() || '',
-        descricao: descricaoInput?.value.trim() || '',
-        logo: logoInput?.files?.[0] || null,
-      },
-      contact: {
-        telefone: document.getElementById('telefone')?.value.trim() || '',
-        email_corporativo: corporateEmailInput?.value.trim() || '',
-        redes_sociais: {
-          facebook: document.getElementById('facebook')?.value.trim() || '',
-          instagram: document.getElementById('instagram')?.value.trim() || '',
-          linkedin: document.getElementById('linkedin')?.value.trim() || '',
-          twitter: document.getElementById('twitter')?.value.trim() || '',
-        },
-      },
-      wastes: {
-        wastes: selectedWastes,
-      },
-      points: {
-        points: selectedPoints,
-      },
-      user: {
-        email: finalEmailInput?.value.trim() || '',
-        password: passwordInput?.value || '',
-      },
-    };
-  };
-
-  const resolveCreatedUserId = async (primaryResponse, email) => {
-    const responseData = await primaryResponse.json().catch(() => ({}));
-    if (responseData?.id) return responseData.id;
-    if (responseData?.user_id) return responseData.user_id;
-    if (responseData?.user?.id) return responseData.user.id;
-
-    const usersResponse = await fetch('/empresas/usuarios');
-    if (!usersResponse.ok) return null;
-    const users = await usersResponse.json();
-    const created = users.find((user) => user.email?.toLowerCase() === email.toLowerCase());
-    return created?.id || null;
-  };
-
-  const submitSignIn = async () => {
-    const payload = getSignInPayload();
-
-    try {
-      const userResponse = await fetch('/api/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload.user),
-      });
-
-      if (!userResponse.ok) {
-        const errorPayload = await userResponse.json().catch(() => ({}));
-        throw new Error(errorPayload?.error || 'Não foi possível criar o usuário.');
-      }
-
-      const userId = await resolveCreatedUserId(userResponse, payload.user.email);
-      if (!userId) {
-        throw new Error('Usuário criado, mas não foi possível obter o identificador para continuar o cadastro.');
-      }
-
-      const infoFormData = new FormData();
-      infoFormData.append('nome_empresa', payload.info.nome_empresa);
-      infoFormData.append('cnpj', payload.info.cnpj);
-      infoFormData.append('razao_social', payload.info.razao_social);
-      infoFormData.append('descricao', payload.info.descricao);
-      infoFormData.append('user_id', String(userId));
-      if (payload.info.logo) {
-        infoFormData.append('logo', payload.info.logo);
-      }
-
-      const requests = [
-        fetch('/empresas/info', {
-          method: 'POST',
-          body: infoFormData,
-        }),
-        fetch('/empresas/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: userId, ...payload.contact }),
-        }),
-        fetch('/empresas/wastes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: userId, ...payload.wastes }),
-        }),
-        fetch('/empresas/points', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: userId, ...payload.points }),
-        }),
-      ];
-
-      const responses = await Promise.all(requests);
-      const failedRequests = responses.filter((response) => !response.ok);
-      if (failedRequests.length) {
-        throw new Error('Algumas informações não puderam ser salvas. Verifique as rotas de cadastro no servidor.');
-      }
-
-      window.location.href = '/login';
-    } catch (error) {
-      alert(error.message || 'Ocorreu um erro ao finalizar o cadastro.');
-    }
   };
 
   steps.forEach((step, index) => {
@@ -541,22 +341,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nextButton) {
       nextButton.addEventListener('click', async () => {
         if (!(await validateCurrentStep(index))) return;
-        const nextIndex = Math.min(index + 1, steps.length - 1);
-        showStep(nextIndex);
+        showStep(Math.min(index + 1, steps.length - 1));
       });
     }
 
     if (backButton) {
       backButton.addEventListener('click', () => {
-        const prevIndex = Math.max(index - 1, 0);
-        showStep(prevIndex);
+        showStep(Math.max(index - 1, 0));
       });
     }
 
     if (finishButton) {
       finishButton.addEventListener('click', async () => {
         if (!(await validateCurrentStep(index))) return;
-        await submitSignIn();
+        window.location.href = '/own-profile';
       });
     }
   });
@@ -613,15 +411,15 @@ document.addEventListener('DOMContentLoaded', () => {
       attachResiduoDelete(item);
       attachResiduoInputBehavior(item);
     });
+
     updateResiduoLabels();
 
     addResiduoButton.addEventListener('click', () => {
       const currentCount = residuosList.querySelectorAll('.residuo-item').length;
-      const nextCount = currentCount + 1;
       const item = document.createElement('div');
       item.className = 'residuo-item';
       item.innerHTML = `
-        <span class="residuo-label">Resíduo ${nextCount}</span>
+        <span class="residuo-label">Resíduo ${currentCount + 1}</span>
         <input type="text" placeholder="Exemplo: Papelão">
       `;
       attachResiduoDelete(item);
@@ -639,61 +437,51 @@ document.addEventListener('DOMContentLoaded', () => {
       name: 'Ponto de Coleta lixo Eletrônico Cascavel',
       image: '../images/pontos-coleta/ponto-coleta-lixo-eletronico-cascavel.jpg',
       coords: [-24.9558, -53.4554],
-      city: 'Cascavel',
     },
     {
       name: 'Ecoponto Cascavel Velho',
       image: '../images/pontos-coleta/ecoponto-cascavel-velho.jpg',
       coords: [-24.9818, -53.4297],
-      city: 'Cascavel',
     },
     {
       name: 'Ecoponto Brasília - Unicacoop',
       image: '../images/pontos-coleta/ecoponto-brasilia-unicacoop.jpg',
-      coords: [-24.935105, -53.430030],
-      city: 'Cascavel',
+      coords: [-24.935105, -53.43003],
     },
     {
       name: 'Ecoponto Manaus',
       image: '../images/pontos-coleta/ecoponto-manaus.jpg',
       coords: [-24.9458, -53.4682],
-      city: 'Cascavel',
     },
     {
       name: 'Ecoponto Melissa',
       image: '../images/pontos-coleta/ecoponto-melissa.jpg',
-      coords: [-24.9080, -53.4355],
-      city: 'Cascavel',
+      coords: [-24.908, -53.4355],
     },
     {
       name: 'Eco Ponto Santa Cruz - COOTACAR',
       image: '../images/pontos-coleta/eco-ponto-santa-cruz-cootacar.jpg',
       coords: [-24.9654, -53.5134],
-      city: 'Cascavel',
     },
     {
       name: 'GP RECICLAGEM',
       image: '../images/pontos-coleta/gp-reciclagem.jpg',
       coords: [-24.99616, -53.46197],
-      city: 'Cascavel',
     },
     {
       name: 'Atlas Comércio de Recicláveis',
       image: '../images/pontos-coleta/atlas-comercio-de-reciclaveis.jpg',
-      coords: [-24.9950, -53.4216],
-      city: 'Cascavel',
+      coords: [-24.995, -53.4216],
     },
     {
       name: 'ASCACAR',
       image: '../images/pontos-coleta/ascacar.jpg',
       coords: [-24.9818, -53.4244],
-      city: 'Cascavel',
     },
     {
       name: 'Ecoponto Quebec',
       image: '../images/pontos-coleta/ecoponto-quebec.jpg',
       coords: [-24.9664, -53.5186],
-      city: 'Cascavel',
     },
   ];
 
@@ -701,9 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const createPontoSelect = (index) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'ponto-item';
-    wrapper.innerHTML = `
-      <span class="ponto-label">Ponto de Coleta ${index}</span>
-    `;
+    wrapper.innerHTML = `<span class="ponto-label">Ponto de Coleta ${index}</span>`;
     const select = document.createElement('select');
     select.className = 'ponto-select';
     select.innerHTML = '<option value="">Digite aqui ou procure no mapa</option>';
@@ -711,19 +497,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return { wrapper, select };
   };
 
-  const cascavelCenter = [-24.9555, -53.4552];
   const mapaElement = document.getElementById('mapa-cascavel');
   const pontosMarkers = new Map();
-  const pontosCoordsCache = new Map();
-  const pontosCoordsByName = new Map();
+  const cascavelCenter = [-24.9555, -53.4552];
   let mapa = null;
-
-  pontosData.forEach((ponto) => {
-    if (Array.isArray(ponto.coords) && ponto.coords.length === 2) {
-      pontosCoordsByName.set(ponto.name, ponto.coords);
-    }
-  });
-
 
   const initMapa = () => {
     if (!mapaElement || !window.L) return null;
@@ -740,97 +517,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return mapInstance;
   };
 
-  const normalize = (value) =>
-    value
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, ' ')
-      .trim();
-
-  const scoreResult = (result, queryName) => {
-    const normalizedQuery = normalize(queryName);
-    const displayName = normalize(result?.display_name || '');
-    const namedetails = normalize(result?.namedetails?.name || '');
-    const isAdministrative =
-      result?.type === 'administrative' ||
-      result?.class === 'boundary' ||
-      result?.class === 'place';
-
-    let score = 0;
-    if (namedetails.includes(normalizedQuery)) score += 6;
-    if (displayName.includes(normalizedQuery)) score += 4;
-    if (!isAdministrative) score += 2;
-    score += Number(result?.importance || 0);
-    return score;
-  };
-
-  const fetchOverpassCoords = async () => {
-    const names = pontosData.map((ponto) => ponto.name);
-    const escapedNames = names.map((name) =>
-      name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    );
-    const query = `
-      [out:json][timeout:25];
-      area["name"="Cascavel"]["is_in:state"="Paraná"]->.searchArea;
-      (
-        node["name"~"^(${escapedNames.join('|')})$"](area.searchArea);
-        way["name"~"^(${escapedNames.join('|')})$"](area.searchArea);
-        relation["name"~"^(${escapedNames.join('|')})$"](area.searchArea);
-      );
-      out center tags;
-    `;
-
-    const response = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      body: query,
-    });
-    const payload = await response.json();
-    payload.elements?.forEach((element) => {
-      const name = element?.tags?.name;
-      if (!name) return;
-      const lat = element.lat ?? element?.center?.lat;
-      const lon = element.lon ?? element?.center?.lon;
-      if (typeof lat === 'number' && typeof lon === 'number') {
-        pontosCoordsByName.set(name, [lat, lon]);
-      }
-    });
-  };
-
-  const fetchCoords = async (query) => {
-    if (pontosCoordsCache.has(query)) return pontosCoordsCache.get(query);
-    if (pontosCoordsByName.has(query)) {
-      const cached = pontosCoordsByName.get(query);
-      pontosCoordsCache.set(query, cached);
-      return cached;
-    }
-
-    try {
-      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&namedetails=1&countrycodes=br&viewbox=-53.58,-24.99,-53.35,-24.88&bounded=1&q=${encodeURIComponent(
-        `${query}, Cascavel, Paraná, Brasil`
-      )}`;
-      const response = await fetch(url, {
-        headers: { 'Accept-Language': 'pt-BR' },
-      });
-      const results = await response.json();
-      if (Array.isArray(results) && results.length) {
-        const best = results
-          .map((result) => ({ result, score: scoreResult(result, query) }))
-          .sort((a, b) => b.score - a.score)[0]?.result;
-        if (best) {
-          const coords = [parseFloat(best.lat), parseFloat(best.lon)];
-          pontosCoordsCache.set(query, coords);
-          return coords;
-        }
-      }
-    } catch (error) {
-      // keep fallback below
-    }
-
-    pontosCoordsCache.set(query, null);
-    return null;
-  };
-
   const buildTooltipContent = (ponto) => {
     const imageUrl = ponto.image || '../images/pontos-coleta/placeholder.svg';
     return `
@@ -841,24 +527,14 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   };
 
-  const updateMarkerForSelect = async (select) => {
+  const updateMarkerForSelect = (select) => {
     const selectedName = select.value;
     const ponto = pontosByName.get(selectedName);
-    if (!ponto || !mapa) return;
-
-    const coords = await fetchCoords(ponto.name);
-    if (!coords) {
-      const existing = pontosMarkers.get(select);
-      if (existing && mapa) {
-        mapa.removeLayer(existing);
-      }
-      pontosMarkers.delete(select);
-      return;
-    }
+    if (!ponto || !mapa || !ponto.coords) return;
 
     let marker = pontosMarkers.get(select);
     if (!marker) {
-      marker = window.L.marker(coords).addTo(mapa);
+      marker = window.L.marker(ponto.coords).addTo(mapa);
       marker.bindTooltip(buildTooltipContent(ponto), {
         direction: 'top',
         offset: [0, -10],
@@ -867,21 +543,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       pontosMarkers.set(select, marker);
     } else {
-      marker.setLatLng(coords);
+      marker.setLatLng(ponto.coords);
       marker.setTooltipContent(buildTooltipContent(ponto));
     }
-    mapa.setView(coords, Math.max(mapa.getZoom(), 14));
+
+    mapa.setView(ponto.coords, Math.max(mapa.getZoom(), 14));
   };
 
-  const setupPontos = async () => {
+  const setupPontos = () => {
     if (!pontosList) return;
     mapa = initMapa();
-    try {
-      await fetchOverpassCoords();
-    } catch (error) {
-      // Ignore and fall back to per-point geocoding.
-    }
-    window.addEventListener('cadastro:step4', () => {
+
+    window.addEventListener('edicao:step3', () => {
       if (!mapa) return;
       setTimeout(() => {
         mapa.invalidateSize();
@@ -900,9 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const refreshPontoSelectOptions = () => {
       const selects = Array.from(pontosList.querySelectorAll('.ponto-select'));
-      const selectedValues = selects
-        .map((select) => select.value)
-        .filter(Boolean);
+      const selectedValues = selects.map((select) => select.value).filter(Boolean);
 
       selects.forEach((select) => {
         const previousValue = select.value;
@@ -931,6 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeButton.addEventListener('click', () => {
         const items = pontosList.querySelectorAll('.ponto-item');
         if (items.length === 1) return;
+
         const marker = pontosMarkers.get(select);
         if (marker && mapa) mapa.removeLayer(marker);
         pontosMarkers.delete(select);
@@ -942,23 +614,16 @@ document.addEventListener('DOMContentLoaded', () => {
       select.addEventListener('change', () => {
         if (!select.value) {
           const marker = pontosMarkers.get(select);
-          if (marker && mapa) {
-            mapa.removeLayer(marker);
-          }
+          if (marker && mapa) mapa.removeLayer(marker);
           pontosMarkers.delete(select);
-
-          const items = pontosList.querySelectorAll('.ponto-item');
-          if (items.length > 1) {
-            wrapper.remove();
-            refreshPontoSelectOptions();
-            updatePontoLabels();
-          }
+          refreshPontoSelectOptions();
           return;
         }
 
         refreshPontoSelectOptions();
         updateMarkerForSelect(select);
       });
+
       pontosList.appendChild(wrapper);
       refreshPontoSelectOptions();
       updatePontoLabels();
@@ -967,9 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addSelect();
 
     if (addPontoButton) {
-      addPontoButton.addEventListener('click', () => {
-        addSelect();
-      });
+      addPontoButton.addEventListener('click', () => addSelect());
     }
   };
 

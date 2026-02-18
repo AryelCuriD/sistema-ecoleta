@@ -1,6 +1,7 @@
 const { connectToDb, getDb, ObjectId } = require('../database.js');
 const verifyAuth = require("../../controllers/verifyAuth.js");
 const collection = 'company_users';
+const bcrypt = require('bcryptjs');
 
 const findUser = async (id) => {
   try {
@@ -71,14 +72,21 @@ const getUsers = async () => {
   }
 };
 
-const deleteUser = async (id) => {
+const deleteUser = async (id, email, password) => {
   try {
     await connectToDb();
     const db = getDb();
     const collection_users = db.collection(collection);
-
-    const result = await collection_users.deleteOne({ _id: new ObjectId(id) });
-    return result.deletedCount > 0
+    const realEmail = await collection_users.findOne({ id }).email
+    const realPassword = await collection_users.findOne({ id }).password
+    console.log(id, realEmail, realPassword)
+    const match = await bcrypt.compare(password, realPassword) && (email === realEmail)
+    
+    if (match) {
+      const result = await collection_users.deleteOne({ _id: new ObjectId(id) });
+      return result.deletedCount > 0
+    }
+    return
   } catch (err) {
     console.error(err)
   }
@@ -93,6 +101,7 @@ const findUserData = async (user) => {
     const collection_contact = db.collection('company_contact');
     const collection_waste = db.collection('company_waste');
     const collection_points = db.collection('company_points');
+    const collection_user = db.collection('company_users');
 
     if (!user || !user["id"]) return;
 
@@ -102,12 +111,14 @@ const findUserData = async (user) => {
     const company_contact = await collection_contact.findOne({ user_id });
     const company_waste = await collection_waste.findOne({ user_id });
     const company_points = await collection_points.findOne({ user_id });
+    const company_user = await collection_user.findOne({ _id: new ObjectId(user_id) })
     
     return {
       info: company_info,
       contact: company_contact,
       wastes: company_waste,
       points: company_points,
+      user: company_user
     }
 
   } catch (err) {

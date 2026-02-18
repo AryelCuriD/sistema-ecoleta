@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecoleta - Editar Perfil</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/editProfile.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+
+<body>
+  <header>
+    <a href="/initial-page"><img src="../images/logo.png" class="logo" alt="Logo Ecoleta"></a>
+    <a class="login" href="/login">Faça Login</a>
+
+    <div class="search-div">
+      <input type="text" placeholder="Encontrar empresas..." class="search">
+      <img src="../images/lupa.png" class="lupa" alt="buscar">
+    </div>
+
+    <a class="info" href="/about">Sobre o Site</a>
+  </header>
+
+  <main class="edit-main">
+    <section class="edit-topo">
+      <img src="../images/logo.png" alt="Ecoleta" class="edit-logo" />
+      <h1 class="edit-titulo">Editar Informações</h1>
+      <p class="edit-subtitulo">Preencha as informações abaixo para<br>editar as informações da sua empresa</p>
+    </section>
+
+    <section class="edit-card" data-step="1">
+      <div class="edit-card-header">
+        <div>
+          <h2>Informações de Contato</h2>
+          <p>Essas informações ficarão visíveis para pessoas físicas que buscam descartar algo.</p>
+        </div>
+        <span class="edit-etapa">Etapa 1 de 3</span>
+      </div>
+
+      <div class="edit-form">
+        <div class="edit-col">
+          <label for="telefone">Telefone</label>
+          <input id="telefone" type="text" placeholder="Digite o telefone de contato da empresa">
+
+          <label for="email-corporativo">E-mail corporativo</label>
+          <input id="email-corporativo" type="email" placeholder="Digite o email corporativo da empresa">
+
+          <label for="descricao">Descrição (Princípios / Missão da empresa)</label>
+          <textarea id="descricao" rows="4"
+            placeholder="digite um texto curto explicando valores, atuação e comprometimento ambiental"></textarea>
+          <span class="char-count">0/1000 caracteres</span>
+        </div>
+
+        <div class="edit-col">
+          <p class="redes-titulo">Redes Sociais</p>
+
+          <label for="facebook">Facebook</label>
+          <input id="facebook" type="text" placeholder="Exemplo: https://www.facebook.com/minhaempresa">
+
+          <label for="instagram">Instagram</label>
+          <input id="instagram" type="text" placeholder="Exemplo: https://www.instagram.com/minhaempresa">
+
+          <label for="linkedin">Linkedin</label>
+          <input id="linkedin" type="text" placeholder="Exemplo: https://www.linkedin.com/company/minhaempresa">
+
+          <label for="twitter">X (Twitter)</label>
+          <input id="twitter" type="text" placeholder="Exemplo: https://x.com/minhaempresa">
+
+          <label for="logo">Logo da empresa</label>
+          <label class="upload-box" for="logo">
+            <small id="logo-upload-text">Inserir uma logo quadrada</small>
+          </label>
+          <input id="logo" type="file" class="upload-input" accept="image/*">
+        </div>
+      </div>
+
+      <div class="edit-acoes">
+        <button class="btn-avancar" type="button">Avançar</button>
+      </div>
+    </section>
+
+    <section class="edit-card is-hidden" data-step="2">
+      <div class="edit-card-header">
+        <div>
+          <h2>Escopo de Coleta</h2>
+          <p>Digite os tipos de resíduos recicláveis que a sua empresa procura.</p>
+        </div>
+        <span class="edit-etapa">Etapa 2 de 3</span>
+      </div>
+
+      <div class="residuos-wrapper">
+        <div class="residuos-card">
+          <div class="residuos-list">
+            <div class="residuo-item">
+              <span class="residuo-label">Resíduo 1</span>
+              <input type="text" placeholder="Exemplo: Papelão">
+            </div>
+          </div>
+          <button class="add-residuo" type="button">＋</button>
+        </div>
+      </div>
+
+      <div class="edit-acoes with-voltar">
+        <button class="btn-voltar" type="button">←</button>
+        <button class="btn-avancar" type="button">Avançar</button>
+      </div>
+    </section>
+
+    <section class="edit-card is-hidden" data-step="3">
+      <div class="edit-card-header">
+        <div>
+          <h2>Pontos de Coleta de Materiais</h2>
+          <p>Informações de pontos de coleta onde a empresa pode buscar o material desejado.</p>
+        </div>
+        <span class="edit-etapa">Etapa 3 de 3</span>
+      </div>
+
+      <div class="coleta-grid">
+        <div class="mapa-coleta">
+          <div id="mapa-cascavel" aria-label="Mapa de Cascavel - PR"></div>
+        </div>
+
+        <div class="pontos-card">
+          <div class="pontos-list" aria-live="polite"></div>
+          <button class="add-ponto" type="button">＋</button>
+        </div>
+      </div>
+
+      <div class="edit-acoes with-voltar">
+        <button class="btn-voltar" type="button">←</button>
+        <button class="btn-finalizar" type="button">Finalizar</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="direitos">© 2025 Ecoleta. Todos os direitos reservados.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../scripts/editProfile.js"></script>
+</body>
+
+</html>

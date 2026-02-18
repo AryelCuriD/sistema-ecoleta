@@ -61,9 +61,9 @@ app.get('/delete-profile', verifyAuth, async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/deleteProfilePage.html'));
 });
 
-app.get('/edit-profile', verifyAuth, async (req, res) => {
-  // qndo tiver bota
-})
+app.get('/edit-profile', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/pages/editProfilePage.html'));
+});
 
 //GET
 
@@ -644,15 +644,16 @@ app.delete('/empresa/points/:id', async (req, res) => {
 
 app.delete('/empresa/user/:id', async (req, res) => {
   try {
-    const{ id } = req.params;
-
+    const{ id } = req.params
+    const { email, password } = req.body
+    console.log(id)
     if (!id) return res.status(400).json({ error: "ID é obrigatório." });
 
-    const result = await deleteUser(id)
+    const result = await deleteUser(id, email, password)
     if (result) {
       res.status(200).json({ message: "Usuário excluído com sucesso." });
     } else {
-      res.status(404).json({ error: "Usuário não encontrados." });
+      res.status(404).json({ error: "Usuário não encontrado." });
     }
   } catch (err) {
     res.status(500).json({ error: "Erro ao excluir usuário:", error: err.message })
