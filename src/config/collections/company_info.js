@@ -1,6 +1,65 @@
 const { connectToDb, getDb, ObjectId } = require('../database.js');
 const collection = 'company_info';
 
+async function cleanupOrphanGridFS() {
+  await connectToDb();
+  const db = getDb();
+
+  const infoCol = db.collection("company_info");
+  const filesCol = db.collection("uploads.files");
+  const chunksCol = db.collection("uploads.chunks");
+
+  const infos = await infoCol
+    .find(
+      { logo: { $exists: true, $ne: null } },
+      { projection: { logo: 1 } }
+    )
+    .toArray();
+
+  const usedLogoIds = infos
+    .map(d => d.logo)
+    .filter(Boolean)
+    .map(id => (typeof id === "string" ? new ObjectId(id) : id));
+
+  if (usedLogoIds.length === 0) {
+    await chunksCol.deleteMany({});
+    await filesCol.deleteMany({});
+    return { deletedFiles: "ALL", deletedChunks: "ALL" };
+  }
+
+  const orphanFiles = await filesCol
+    .find(
+      { _id: { $nin: usedLogoIds } },
+      { projection: { _id: 1 } }
+    )
+    .toArray();
+
+  const orphanFileIds = orphanFiles.map(f => f._id);
+
+  let chunksResult = { deletedCount: 0 };
+  if (orphanFileIds.length > 0) {
+    chunksResult = await chunksCol.deleteMany({ files_id: { $in: orphanFileIds } });
+  }
+
+  let filesResult = { deletedCount: 0 };
+  if (orphanFileIds.length > 0) {
+    filesResult = await filesCol.deleteMany({ _id: { $in: orphanFileIds } });
+  }
+
+  const existingFiles = await filesCol.find({}, { projection: { _id: 1 } }).toArray();
+  const existingFileIds = existingFiles.map(f => f._id);
+
+  const orphanChunksResult = await chunksCol.deleteMany({
+    files_id: { $nin: existingFileIds },
+  });
+
+  return {
+    deletedChunksFromOrphanFiles: chunksResult.deletedCount,
+    deletedOrphanFiles: filesResult.deletedCount,
+    deletedChunksWithoutParentFile: orphanChunksResult.deletedCount,
+  };
+}
+
 const getInfos = async () => {
   try {
     await connectToDb();
@@ -55,12 +114,8 @@ const createInfo = async (user_id, nome_empresa, cnpj, razao_social, logo, descr
     await connectToDb();
     const bd = getDb();
     const collection_empresas = bd.collection(collection);
-    const realIds = bd.collection('company_info').find();
-    const logos = realIds.map(doc => doc.logo);
-    const files = bd.collection('uploads.files').find();
-    const chunks = bd.collection('uploads.chunks').find();
-
-    // verificar os files e chunks com objectids sem relação e excluir
+    
+    await cleanupOrphanGridFS();
 
     const newData = {
       user_id: user_id,

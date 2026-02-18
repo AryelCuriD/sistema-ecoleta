@@ -86,11 +86,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const editButton = document.getElementById('edit-profile-button');
-  if (editButton) {
-    editButton.addEventListener('click', () => {
-      window.alert('Fluxo de edição de perfil será implementado em breve.');
-    });
-  }
+if (editButton) {
+  editButton.addEventListener('click', () => {
+    window.location.href = '/edit-profile';
+  });
+}
+
 
   const deleteButton = document.getElementById('delete-profile-button');
   if (deleteButton) {
