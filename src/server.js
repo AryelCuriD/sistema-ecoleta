@@ -646,7 +646,8 @@ app.delete('/empresa/user/:id', async (req, res) => {
   try {
     const{ id } = req.params
     const { email, password } = req.body
-    console.log(id)
+    console.log(email, password)
+
     if (!id) return res.status(400).json({ error: "ID é obrigatório." });
 
     const result = await deleteUser(id, email, password)

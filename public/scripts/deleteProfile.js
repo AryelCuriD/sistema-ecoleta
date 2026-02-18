@@ -33,8 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok) {
         openModal()
-      } else {
-        // não autenticado
       }
     } catch (err) {
       console.error(err)
@@ -58,12 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
       })
 
       if (res.ok) {
-        console.log('a')
+        console.log('boa meu')
       }
     } catch (err) {
       console.error(err)
     }
     closeModal();
-    window.alert('Perfil excluído com sucesso.');
   });
 });
