@@ -81,3 +81,52 @@ const stripHTMLTags = (string) => {
     const parseHTML = new DOMParser().parseFromString(string, 'text/html')
     return parseHTML.body.textContent || '';
 }
+
+const validateCNPJ = (cnpj) => {
+    cnpj = cnpj.replace(/[^\d]+/g, '');
+    if (cnpj.length !== 14 || !!cnpj.match(/(\d)\1{13}/)) return false;
+
+    const size = cnpj.length - 2;
+    const numbers = cnpj.substring(0, size);
+    const digits = cnpj.substring(size);
+
+    const calc = (s) => {
+        let sum = 0;
+        let pos = s.length - 7;
+        for (let i = s.length; i >= 1; i--) {
+        sum += s.charAt(s.length - i) * pos--;
+        if (pos < 2) pos = 9;
+        }
+        return sum % 11 < 2 ? 0 : 11 - (sum % 11);
+    };
+
+    const digit1 = calc(numbers);
+    const digit2 = calc(numbers + digit1);
+
+    return digit1 === Number(digits[0]) && digit2 === Number(digits[1]);
+};
+
+function validateSocial(rede, input) {
+  const value = input.value.trim();
+
+  const patterns = {
+    facebook: /^https:\/\/(www\.)?facebook\.com\/[^\/]+\/?$/i,
+    instagram: /^https:\/\/(www\.)?instagram\.com\/[^\/]+\/?$/i,
+    linkedin: /^https:\/\/(www\.)?linkedin\.com\/(company\/)?[^\/]+\/?$/i,
+    twitter: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[^\/]+\/?$/i
+  };
+
+  if (!patterns[rede]) {
+    console.error("Rede social inválida.");
+    return false;
+  }
+
+  if (!patterns[rede].test(value)) {
+    input.setCustomValidity(`URL inválida para ${rede}.`);
+    input.reportValidity();
+    return false;
+  }
+
+  input.setCustomValidity("");
+  return true;
+}

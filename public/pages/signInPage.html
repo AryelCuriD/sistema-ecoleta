@@ -54,9 +54,10 @@
 
           <label for="logo">Logo da empresa</label>
           <label class="upload-box" for="logo"> 
-            <small id="logo-upload-text">Inserir uma logo quadrada</small>
+            <small id="logo-upload-text">Insira uma logo quadrada</small>
           </label>
           <input id="logo" type="file" class="upload-input" accept="image/*">
+          
         </div>
 
         <div class="cadastro-col">
@@ -67,7 +68,7 @@
       </div>
 
       <div class="cadastro-acoes">
-        <button class="btn-avancar" type="button">Avançar</button>
+        <button class="btn-avancar" id="button-1" type="button">Avançar</button>
       </div>
     </section>
 
@@ -107,8 +108,8 @@
       </div>
 
       <div class="cadastro-acoes with-voltar">
-        <button class="btn-voltar" type="button">←</button>
-        <button class="btn-avancar" type="button">Avançar</button>
+        <button class="btn-voltar" id="back-2" type="button">←</button>
+        <button class="btn-avancar" id="button-2" type="button">Avançar</button>
       </div>
     </section>
 
@@ -124,19 +125,25 @@
       <div class="residuos-wrapper">
         <div class="residuos-card">
           <div class="residuos-list">
+
             <div class="residuo-item">
               <span class="residuo-label">Resíduo 1</span>
-              <input type="text" placeholder="Exemplo: Papelão">
+              <div class="residuo-row">
+                <input type="text" id="input-1" placeholder="Exemplo: Papelão">
+                <button style="display: none;" class="remove-residuo" id="delete-1" type="button"><img src="../images/trash.png"></button>
+              </div>
             </div>
+
           </div>
           <button class="add-residuo" type="button">＋</button>
         </div>
       </div>
 
       <div class="cadastro-acoes with-voltar">
-        <button class="btn-voltar" type="button">←</button>
-        <button class="btn-avancar" type="button">Avançar</button>
+        <button class="btn-voltar" id="back-3" type="button">←</button>
+        <button class="btn-avancar" id="button-3" type="button">Avançar</button>
       </div>
+      
     </section>
 
     <section class="cadastro-card is-hidden" data-step="4">
@@ -154,14 +161,26 @@
         </div>
 
         <div class="pontos-card">
-          <div class="pontos-list" aria-live="polite"></div>
+          <div class="pontos-list" aria-live="polite">
+            <div class="ponto-item">
+
+              <span class="ponto-label">Ponto de Coleta 1</span>
+              <div class="select-row">
+                <select class="ponto-select">
+                  <option value="">Selecione um ponto de coleta</option>
+                </select>
+                <button style="display: none;" class="remove-ponto" type="button"><img src="../images/trash.png"></button>
+              </div>
+              
+            </div>
+          </div>
           <button class="add-ponto" type="button">＋</button>
         </div>
       </div>
 
       <div class="cadastro-acoes with-voltar">
-        <button class="btn-voltar" type="button">←</button>
-        <button class="btn-avancar" type="button">Avançar</button>
+        <button class="btn-voltar" id="back-4" type="button">←</button>
+        <button class="btn-avancar" id="button-4" type="button">Avançar</button>
       </div>
     </section>
 
@@ -195,7 +214,7 @@
       </div>
 
       <div class="cadastro-acoes with-voltar">
-        <button class="btn-voltar" type="button">←</button>
+        <button class="btn-voltar" id="back-5" type="button">←</button>
         <button class="btn-finalizar" type="button">Finalizar</button>
       </div>
     </section>
@@ -205,6 +224,7 @@
     <p class="direitos">© 2025 - Ecoleta - Todos os direitos reservados</p>
   </footer>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../scripts/pontosData.js"></script>
   <script src="../scripts/signIn.js"></script>
   <script src="../scripts/utils.js"></script>
 </body>

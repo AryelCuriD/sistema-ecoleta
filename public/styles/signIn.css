@@ -117,6 +117,27 @@
   resize: none;
 }
 
+.error-msg {
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  background-color: #a745455e;
+  border: solid 2px #a74545;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 25px;
+  min-height: 50px;
+  max-height: 800px;
+  padding: 7px;
+}
+
+.error-msg .error-label {
+  color: #a74545;
+  font-weight: 700;
+  font-size: smaller;
+  margin: 5px;
+}
+
 .upload-box {
   display: flex;
   flex-direction: column;
@@ -247,6 +268,28 @@
 
 .residuos-card input[type="text"]::placeholder {
   color: #9aa6a0;
+}
+
+.residuo-row, .select-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.residuo-row button, .residuo-row img, .select-row button, .select-row img {
+  border: none;
+  background: none;
+  height: 18px;
+}
+
+.residuo-row button:hover, .select-row button:hover {
+  cursor: pointer;
+  filter: invert(31%) sepia(42%) saturate(850%) hue-rotate(325deg) brightness(92%) contrast(90%);
+}
+
+.residuo-row input {
+  width: 80%;
 }
 
 .add-residuo {
