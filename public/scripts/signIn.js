@@ -258,7 +258,31 @@ document.querySelector('#back-3').addEventListener('click', async (e) => {
 });
 
 
+
+
+
 const addWasteBtn = document.querySelector('.add-residuo');
+
+const normalizeWaste = (s) =>
+  String(s || '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+const capitalizeFirst = (s) => {
+  s = String(s || '');
+  const t = s.trimStart();
+  if (!t) return s;
+  return t.charAt(0).toUpperCase() + t.slice(1);
+};
+
+function attachWasteCapitalization(inputEl) {
+  inputEl.addEventListener('input', () => {
+    const before = inputEl.value;
+    const after = capitalizeFirst(before);
+
+    if (after !== before) inputEl.value = after;
+  });
+}
+
+attachWasteCapitalization(document.querySelector('.residuo-item input'));
 
 addWasteBtn.addEventListener('click', () => { 
   const wasteList = document.querySelector('.residuos-list');
@@ -274,9 +298,11 @@ addWasteBtn.addEventListener('click', () => {
   `;
   wasteList.appendChild(newItem);
 
+  attachWasteCapitalization(newItem.querySelector('input'));
+
   const deleteBtn = document.getElementById(`delete-${count}`);
   deleteBtn.addEventListener('click', () => {
-    newItem.remove();
+  newItem.remove();
 
     const items = document.querySelectorAll('.residuo-item');
     items.forEach((item, index) => {
@@ -289,26 +315,41 @@ addWasteBtn.addEventListener('click', () => {
 
 document.querySelector('#button-3').addEventListener('click', async (e) => {
   const wasteInputs = document.querySelectorAll('.residuo-item input');
-  let errors = []
-  let wastes = []
+  let errors = [];
+  let wastes = [];
 
   wasteInputs.forEach(input => {
     if (input.value.trim()) {
-      wastes.push(input.value);
+      const fixed = capitalizeFirst(input.value);
+      input.value = fixed;
+      wastes.push(fixed.trim());
     }
   });
 
   if (wastes.length === 0) {
     errors.push('Adicione pelo menos um resíduo para coleta.');
+  } else {
+    const seen = new Set();
+    const duplicated = [];
+
+    wastes.forEach(w => {
+      const key = normalizeWaste(w);
+      if (seen.has(key)) duplicated.push(w);
+      else seen.add(key);
+    });
+
+    if (duplicated.length > 0) {
+      errors.push('Não é permitido repetir resíduos (ex: "papel" e "Papel").');
+    }
   }
 
   if (errors.length > 0) {
     callError(errors, 3);
-    return
+    return;
   }
 
   clearErrors();
-  data.wastes = {}
+  data.wastes = {};
   data.wastes.wastes = wastes;
 
   document.querySelector('.cadastro-card[data-step="3"]').classList.add('is-hidden');
@@ -321,6 +362,10 @@ document.querySelector('#back-4').addEventListener('click', async (e) => {
   document.querySelector('.cadastro-card[data-step="4"]').classList.add('is-hidden');
   document.querySelector('.cadastro-card[data-step="3"]').classList.remove('is-hidden');
 });
+
+
+
+
 
 function initializeMap() {
   const cityCenter = [-24.9555, -53.4552];
@@ -601,7 +646,148 @@ document.querySelector('.btn-finalizar').addEventListener('click', async () => {
 
   data.user = {
     email: emailFinalIn.value.trim(),
-    senha: senhaFinalIn.value.trim()
+    password: senhaFinalIn.value.trim()
   };
-  console.log(data)
+
+  dataFetch()
 });
+
+async function dataFetch() {
+  var user_id
+
+  const email = data.user.email
+  const password = data.user.password
+
+  let errors = []
+  try {
+    const res = await fetch('/api/signin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
+    const userData = await res.json()
+
+    if (res.ok) {
+      user_id = userData.newUser._id;
+      infoFetch();
+      contactFetch();
+      wastesFetch();
+      pointsFetch();
+      loginFetch();
+    } else {
+      errors.push(userData.error)
+      callError(errors, 5)
+    }
+  } catch (err) {
+    console.error(err)
+  }
+  
+  async function infoFetch() {
+    const formData = new FormData()
+    formData.append('user_id', user_id)
+    formData.append('nome_empresa', data.info.nome_empresa)
+    formData.append('cnpj', data.info.cnpj)
+    formData.append('razao_social', data.info.razao_social)
+    formData.append('descricao', data.info.descricao)
+    formData.append('logo', data.info.logo)
+
+    try {
+      const res = await fetch('/empresas/info', {
+        method: 'POST',
+        body: formData
+      });
+      const newInfo = await res.json()
+
+      if (res.ok) {
+        console.log(newInfo)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function contactFetch() {
+    const formData = new FormData();
+    formData.append('user_id', user_id)
+    formData.append('telefone', data.contact.telefone)
+    formData.append('email', data.contact.email)
+    formData.append('facebook', data.contact.facebook)
+    formData.append('instagram', data.contact.instagram)
+    formData.append('linkedin', data.contact.linkedin)
+    formData.append('twitter', data.contact.twitter)
+
+    try {
+      const res = await fetch('/empresas/contato', {
+        method: 'POST',
+        body: formData
+      });
+      const newContact = await res.json()
+
+      if (res.ok) {
+        console.log(newContact)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function wastesFetch() {
+    const wastes = data.wastes.wastes
+    try {
+      const res = await fetch('/empresas/wastes', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({ user_id, wastes })
+      });
+      const newWastes = await res.json()
+
+      if (res.ok) {
+        console.log(newWastes)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function pointsFetch() {
+    const points = data.points.points
+    try {
+      const res = await fetch('/empresas/points', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({ user_id, points })
+      });
+      const newPoints = await res.json()
+
+      if (newPoints) {
+        console.log(newPoints)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function loginFetch() {
+    const email = data.user.email
+    const password = data.user.password
+    const rememberMe = document.querySelector('#remember-me').checked;
+
+    try {
+      const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, rememberMe })
+      });
+      const msg = await res.json();
+
+      if (res.ok) {
+          console.log('Login bem-sucedido:', msg);
+          window.location.href = '/own-profile';
+      } else {
+          console.error('Erro no login:', msg);
+      }
+    } catch (err) {
+      console.error(err)
+    };
+  }
+}

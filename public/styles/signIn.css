@@ -379,6 +379,24 @@
   cursor: pointer;
 }
 
+.login-lembrar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6C8893;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-lembrar input {
+  width: 14px;
+  height: 14px;
+  accent-color: #6fbf73;
+  cursor: pointer;
+}
+
 .finalizar-form {
   display: grid;
   grid-template-columns: 1fr;

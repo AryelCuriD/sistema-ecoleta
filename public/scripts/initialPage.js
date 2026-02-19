@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async (e) => {
     const users = await getUsers()
+    if (!users) return
     const cardEmpresas = document.querySelector('.card-empresas');
     cardEmpresas.innerHTML = '<h3>Empresas Parceiras</h3>'
 
