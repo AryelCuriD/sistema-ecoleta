@@ -1,38 +1,110 @@
-document.addEventListener('DOMContentLoaded', async (e) => {
-    const users = await getUsers()
-    if (!users) return
+document.addEventListener('DOMContentLoaded', async () => {
     const cardEmpresas = document.querySelector('.card-empresas');
-    cardEmpresas.innerHTML = '<h3>Empresas Parceiras</h3>'
+    const filterOptionsContainer = document.querySelector('#waste-filter-options');
+    const wasteFilterForm = document.querySelector('#waste-filter-form');
+    const cleanFiltersButton = document.querySelector('#clean-waste-filters');
 
-    users.forEach(async (u) => {
-        const data = await getUserData(u._id)
-        const logo = await getCompanyLogo(data.info.logo)
+    const users = await getUsers();
+    const wastesResponse = await fetch('/empresas/wastes');
+    const wastesData = wastesResponse.ok ? await wastesResponse.json() : [];
 
-        cardEmpresas.innerHTML += `
-        <div class="card">
-          <img class="card-imagem" id="${data.info.nome_empresa}"></img>
-          <div class="card-info">
-            <h4>${stripHTMLTags(data.info.nome_empresa)}</h4>
-            <p>${stripHTMLTags(data.info.descricao)}</p>
-            <div class="card-tags">
-                ${(() => {
-                    const residuos = data.wastes?.wastes || ["Sem Resíduos"];
+    if (!Array.isArray(users) || users.length === 0) {
+        cardEmpresas.innerHTML = '<h3>Empresas Parceiras</h3><p>Nenhuma empresa encontrada.</p>';
+        filterOptionsContainer.innerHTML = '<p>Nenhum resíduo encontrado.</p>';
+        return;
+    }
 
-                    const primeiros = residuos.slice(0, 3)
-                        .map(m => `<span>${stripHTMLTags(m)}</span>`)
-                        .join('');
+    const companiesData = await Promise.all(users.map(async (user) => {
+        const data = await getUserData(user._id);
+        const logo = await getCompanyLogo(data.info.logo);
 
-                    const restante = residuos.length > 3
-                        ? `<span>+${residuos.length - 3}</span>`
-                        : '';
+        return {
+            id: user._id,
+            info: data.info,
+            description: data.info.descricao,
+            wastes: Array.isArray(data.wastes?.wastes) ? data.wastes.wastes : [],
+            logoUrl: URL.createObjectURL(logo)
+        };
+    }));
 
-                    return primeiros + restante;
-                })()}
-            </div>
-            <a class="card-botao" href="/profile?id=${u._id}">Ver perfil da empresa</a>
-          </div>
-        </div>
-        `
-        document.querySelector(`#${data.info.nome_empresa}`).src = URL.createObjectURL(logo)
+    const uniqueWastes = [...new Set((Array.isArray(wastesData) ? wastesData : [])
+        .flatMap(entry => Array.isArray(entry.wastes) ? entry.wastes : [])
+        .filter(Boolean)
+        .map(waste => waste.trim()))
+    ].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+    if (uniqueWastes.length === 0) {
+        filterOptionsContainer.innerHTML = '<p>Nenhum resíduo cadastrado.</p>';
+    } else {
+        filterOptionsContainer.innerHTML = uniqueWastes
+            .map((waste, index) => `
+                <label class="filtro-opcao" for="waste-${index}">
+                    <input type="checkbox" id="waste-${index}" name="residuo" value="${stripHTMLTags(waste)}">
+                    <span>${stripHTMLTags(waste)}</span>
+                </label>
+            `)
+            .join('');
+    }
+
+    const renderCompanies = (selectedWastes = []) => {
+        const normalizedSelectedWastes = selectedWastes.map(waste => waste.toLowerCase());
+
+        const filteredCompanies = companiesData.filter((company) => {
+            if (normalizedSelectedWastes.length === 0) {
+                return true;
+            }
+
+            const normalizedCompanyWastes = company.wastes.map(waste => waste.toLowerCase());
+            return normalizedSelectedWastes.every(waste => normalizedCompanyWastes.includes(waste));
+        });
+
+        cardEmpresas.innerHTML = '<h3>Empresas Parceiras</h3>';
+
+        if (filteredCompanies.length === 0) {
+            cardEmpresas.innerHTML += '<p>Nenhuma empresa encontrada para os resíduos selecionados.</p>';
+            return;
+        }
+
+        filteredCompanies.forEach((company) => {
+            const residuos = company.wastes.length > 0 ? company.wastes : ['Sem Resíduos'];
+            const primeiros = residuos.slice(0, 3)
+                .map(waste => `<span>${stripHTMLTags(waste)}</span>`)
+                .join('');
+
+            const restante = residuos.length > 3
+                ? `<span>+${residuos.length - 3}</span>`
+                : '';
+
+            cardEmpresas.innerHTML += `
+                <div class="card">
+                  <img class="card-imagem" src="${company.logoUrl}" alt="Logo da empresa ${stripHTMLTags(company.info.nome_empresa)}">
+                  <div class="card-info">
+                    <h4>${stripHTMLTags(company.info.nome_empresa)}</h4>
+                    <p>${stripHTMLTags(company.description)}</p>
+                    <div class="card-tags">
+                      ${primeiros + restante}
+                    </div>
+                    <a class="card-botao" href="/profile?id=${company.id}">Ver perfil da empresa</a>
+                  </div>
+                </div>
+            `;
+        });
+    };
+
+    wasteFilterForm.addEventListener('change', () => {
+        const selectedWastes = [...wasteFilterForm.querySelectorAll('input[name="residuo"]:checked')]
+            .map(input => input.value);
+
+        renderCompanies(selectedWastes);
     });
-})
+
+    cleanFiltersButton.addEventListener('click', () => {
+        const checkedFilters = wasteFilterForm.querySelectorAll('input[name="residuo"]:checked');
+        checkedFilters.forEach((input) => {
+            input.checked = false;
+        });
+        renderCompanies();
+    });
+
+    renderCompanies();
+});

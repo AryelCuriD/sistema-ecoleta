@@ -72,19 +72,41 @@ main {
     height: 28px;
 }
 
-.filtro-grupo {
+.filtro-formulario {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    color: #365C45;
-    font-size: 14px;
+    gap: 12px;
 }
 
-.filtro-grupo label {
+.filtro-subtitulo {
     margin: 0;
     font-size: 15px;
     color: #233026;
     font-weight: bold;
+}
+
+.filtro-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.filtro-opcao {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #365C45;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filtro-opcao input {
+    accent-color: #6fbf73;
+    width: 16px;
+    height: 16px;
 }
 
 .filtro-botao {
@@ -97,14 +119,8 @@ main {
     cursor: pointer;
 }
 
-.filtro-grupo select {
-    height: 42px;
-    border-radius: 12px;
-    border: 1px solid #d6e3d6;
-    padding: 0 12px;
-    background-color: #ffffff;
-    color: #233026;
-    font-weight: bold;
+.filtro-botao.limpar {
+    background-color: #365C45;
 }
 
 .card-empresas {
