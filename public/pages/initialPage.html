@@ -46,29 +46,18 @@
           <img src="../images/filter.png" class="img-filter" alt="Filtros">
           <span>Filtros</span>
         </div>
-        <div class="filtro-grupo">
-          <label for="cidade">Cidade</label>
-          <select id="cidade">
-            <option>Todas as cidades</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <label for="bairro">Bairro</label>
-          <select id="bairro">
-            <option>Todos os bairros</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <label for="residuo">Tipo de resíduo</label>
-          <select id="residuo">
-            <option>Todos os materiais</option>
-          </select>
-        </div>
-        <button class="filtro-botao">Aplicar filtros</button>
+
+        <form id="waste-filter-form" class="filtro-formulario">
+          <p class="filtro-subtitulo">Tipo de resíduo</p>
+          <div id="waste-filter-options" class="filtro-opcoes"></div>
+          <button type="button" id="clean-waste-filters" class="filtro-botao limpar">Limpar</button>
+        </form>
       </div>
 
       <div class="card-empresas">
         <h3>Empresas Parceiras</h3>
+      </div>
+    </div>
 
   </main>
 

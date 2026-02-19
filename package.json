@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/AryelCuriD/sistema-ecoleta/issues"
   },
-  "homepage": "https://github.com/AryelCuriD/sistema-ecoleta#readme"
+  "homepage": "https://github.com/AryelCuriD/sistema-ecoleta#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
 }
