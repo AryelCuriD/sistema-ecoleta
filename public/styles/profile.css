@@ -79,6 +79,7 @@
 
 .company-description {
   width: 44%;
+  min-width: 0;
 }
 
 .company-description p {
@@ -86,6 +87,8 @@
   color: #496873;
   line-height: 1.5;
   font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .company-details-grid {

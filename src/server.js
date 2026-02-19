@@ -14,7 +14,7 @@ const { createPoints, editPoints, deletePoints, getPoints, findPoints } = requir
 const { findUser, registerCompany, getUsers, deleteUser, findUserData } = require('./config/collections/company_user.js');
 const cookieParser = require('cookie-parser');
 const verifyAuth = require('./controllers/verifyAuth.js');
-const { error } = require('console');
+const { error, info } = require('console');
 
 const app = express();
 app.use(express.json());
@@ -546,92 +546,20 @@ app.put('/empresa/points/:id', async (req, res) => {
   }
 });
 
-//DELETE
-
-// Excluir dados básicos das empresas
-app.delete('/empresas/info/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    if (!id) return res.status(400).json({ error: "ID da empresa é obrigatório." });
-
-    const resultado = await deleteInfo(id);
-
-    if (resultado) {
-      res.status(200).json({ message: "Dados de identificação excluídos com sucesso." });
-    } else {
-      res.status(404).json({ error: "Dados de identificação não encontrados." });
-    }
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro ao excluir dados de identificação da empresa." });
-  }
-});
-
-// Deletar contatos da empresa
-app.delete('/empresas/contato/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!id) return res.status(400).json({ error: "ID da empresa é obrigatório." });
-
-    const result = await deleteContact(id);
-
-    if (result) {
-      res.status(200).json({ message: "Dados de contato excluídos com sucesso." });
-    } else {
-      res.status(404).json({ error: "Dados de contato não encontrados." });
-    }
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao excluir dados de contato da empresa:", error: err.message });
-  }
-})
-
-app.delete('/empresas/waste/:id', async (req, res) => {
-  try {
-    const { id } = req.params
-
-    if (!id) return res.status(400).json({ error: "ID da empresa é obrigatório." });
-
-    const result = await deleteWaste(id)
-    if (result) {
-      res.status(200).json({ message: "Resíduos da empresa excluídos com sucesso." });
-    } else {
-      res.status(404).json({ error: "Resíduos da empresa não encontrados." });
-    }
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao excluir dados de contato da empresa:", error: err.message });
-  }
-})
-
-app.delete('/empresa/points/:id', async (req, res) => {
-  try {
-    const { id } = req.params
-
-    if (!id) return res.status(400).json({ error: "ID da empresa é obrigatório." });
-
-    const result = await deletePoints(id)
-    if (result) {
-      res.status(200).json({ message: "Pontos de coleta da empresa excluídos com sucesso." });
-    } else {
-      res.status(404).json({ error: "Pontos de coleta da empresa não encontrados." });
-    }
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao excluir pontos de coleta da empresa:", error: err.message });
-  }
-});
-
 app.delete('/empresa/user/:id', async (req, res) => {
   try {
     const{ id } = req.params
     const { email, password } = req.body
-    console.log(email, password)
 
     if (!id) return res.status(400).json({ error: "ID é obrigatório." });
 
-    const result = await deleteUser(id, email, password)
-    if (result) {
+    const userResult = await deleteUser(id, email, password)
+    await deleteInfo(id)
+    await deleteContact(id)
+    await deleteWaste(id)
+    await deletePoints(id)
+    
+    if (userResult) {
       res.status(200).json({ message: "Usuário excluído com sucesso." });
     } else {
       res.status(404).json({ error: "Usuário não encontrado." });

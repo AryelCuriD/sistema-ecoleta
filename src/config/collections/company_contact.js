@@ -112,7 +112,7 @@ const deleteContact = async (id) => {
         const db = getDb();
         const collectionContact = db.collection(collection);
 
-        const result = await collectionContact.deleteOne({ _id: new ObjectId(id) });
+        const result = await collectionContact.deleteOne({ user_id: id });
         return result.deletedCount > 0;
     } catch (err) {
         console.error("Erro ao excluir dados de contato da empresa:", err.message);

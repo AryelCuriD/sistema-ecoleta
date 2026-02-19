@@ -138,7 +138,7 @@ const deleteInfo = async (id) => {
     const bd = getDb();
     const collection_empresas = bd.collection(collection);
 
-    const resultado = await collection_empresas.deleteOne({ _id: new ObjectId(id) });
+    const resultado = await collection_empresas.deleteOne({ user_id: id });
     return resultado.deletedCount > 0;
   } catch (err) {
     console.error("Erro ao excluir dados de identificação da empresa:", err.message);
@@ -162,7 +162,6 @@ const editInfo = async (id, updatedData) => {
     );
     
     return resultado.modifiedCount > 0;
-    return resultado.matchedCount > 0;
   } catch (err) {
     console.error("Erro ao editar dados de identificação da empresa:", err.message);
     throw err;
