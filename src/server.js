@@ -16,7 +16,6 @@ const cookieParser = require('cookie-parser');
 const verifyAuth = require('./controllers/verifyAuth.js');
 const { error } = require('console');
 
-//App
 const app = express();
 app.use(express.json());
 app.use(express.static('public'))
@@ -32,7 +31,6 @@ async function startBd() {
 }
 startBd();
 
-// Rotas HTML
 app.get('/initial-page', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/initialPage.html'));
 })
@@ -65,8 +63,6 @@ app.get('/edit-profile', async (req, res) => {
   res.sendFile(path.join(__dirname, '../public/pages/editProfilePage.html'));
 });
 
-//GET
-
 app.get('/api/me', verifyAuth, async (req, res) => {
   res.status(200).json({ logged: true, user: req.user });
 })
@@ -92,7 +88,6 @@ app.get('/empresa/data/:id', async (req, res) => {
   }
 })
 
-// GET dados básicos das empresas
 app.get('/empresas/infos', async (req, res) => {
     try{
         const companies = await getInfos();
@@ -103,7 +98,6 @@ app.get('/empresas/infos', async (req, res) => {
     }
 });
 
-// GET dados básicos de uma empresa pelo id
 app.get('/empresas/info/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -119,7 +113,6 @@ app.get('/empresas/info/:id', async (req, res) => {
   }
 });
 
-//GET dados de contato das empresas
 app.get('/empresas/contatos', async (req, res) => {
   try {
     const contacts = await getContacts();
@@ -129,7 +122,6 @@ app.get('/empresas/contatos', async (req, res) => {
   }
 });
 
-//GET dados de contato de uma empresa pelo id
 app.get('/empresas/contato/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -143,7 +135,6 @@ app.get('/empresas/contato/:id', async (req, res) => {
   }
 });
 
-//GET todos os residuos
 app.get('/empresas/wastes', async (req, res) => {
   try {
     const wastes = await getWastes();
@@ -153,7 +144,6 @@ app.get('/empresas/wastes', async (req, res) => {
   }
 });
 
-//GET residuos especifico
 app.get('/empresas/waste/:id', async (req, res) => {
   try {
     const { id } = req.params
@@ -171,7 +161,6 @@ app.get('/empresas/waste/:id', async (req, res) => {
   }
 })
 
-//GET todos os pontos de coleta
 app.get('/empresas/points', async (req, res) => {
   try {
     const points = await getPoints();
@@ -181,7 +170,6 @@ app.get('/empresas/points', async (req, res) => {
   }
 })
 
-//GET pontos de coleta especifco
 app.get('/empresa/points/:id', async (req, res) => {
   try {
     const { id } = req.params
@@ -198,7 +186,6 @@ app.get('/empresa/points/:id', async (req, res) => {
   }
 })
 
-// GET todos os usuários
 app.get('/empresas/users', async (req, res) => {
   try {
     const users = await getUsers();
@@ -209,7 +196,6 @@ app.get('/empresas/users', async (req, res) => {
   }
 })
 
-// Get user com id
 app.get('/empresas/user/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -227,7 +213,6 @@ app.get('/empresas/user/:id', async (req, res) => {
   } 
 });
 
-// GET logo da empresa
 app.get("/empresas/logo/:id", async (req, res) => {
   const { ObjectId, getDb } = require("./config/database.js");
 
@@ -251,8 +236,6 @@ app.get("/empresas/logo/:id", async (req, res) => {
     return res.status(500).json({ error: "Erro ao buscar logo" });
   }
 });
-
-//POST
 
 //Login / logout de empresa
 app.post('/api/login', async (req, res) => {
@@ -278,14 +261,13 @@ app.post('/api/signin', async (req, res) => {
       }
     }
     
-    registerCompany(email, bcrypt.hashSync(password, 10));
-    res.status(201).json({ message: 'Empresa registrada com sucesso' });
+    const newUser =  await registerCompany(email, bcrypt.hashSync(password, 10));
+    res.status(201).json({ message: 'Empresa registrada com sucesso', newUser });
   } catch(err) {
     res.status(500).json({ error: 'Erro ao registrar nova empresa' });
   }
 })
 
-// Criar dados básicos das empresas
 app.post('/empresas/info', upload.single('logo'), async (req, res) => {
   try {
     if (!req.body) return res.status(400).json({ error: 'Dados inválidos' });
@@ -302,7 +284,6 @@ app.post('/empresas/info', upload.single('logo'), async (req, res) => {
       return res.status(400).json({ error: "Formato inválido. Use PNG/JPG/JPEG." });
     }
 
-    // Faz upload no GridFS
     const fileId = await new Promise((resolve, reject) => {
       const uploadStream = bucket.openUploadStream(req.file.originalname, {
         contentType: req.file.mimetype,
@@ -315,7 +296,6 @@ app.post('/empresas/info', upload.single('logo'), async (req, res) => {
       uploadStream.end(req.file.buffer);
     });
 
-    //  Salva os dados da empresa e o id da logo
     const companyInfo = await createInfo(
       user_id,
       nome_empresa,
@@ -337,21 +317,20 @@ app.post('/empresas/info', upload.single('logo'), async (req, res) => {
   }
 });
 
-// Criar dados de contato da empresa
-app.post('/empresas/contato', async (req, res) => {
+app.post('/empresas/contato', upload.none(), async (req, res) => {
   try {
     if  (!req.body) return res.status(400).json({ error: 'Dados inválidos' });
 
     const { user_id, telefone, email, facebook, instagram, linkedin, twitter } = req.body;
-
     if (!user_id || !telefone || !email) return res.status(400).json({ error: "Campos obrigatórios estão faltando." });
 
     const patterns = {
-      facebook: /^https:\/\/(www\.)?facebook\.com\/[^\/]+\/?$/i,
-      instagram: /^https:\/\/(www\.)?instagram\.com\/[^\/]+\/?$/i,
-      linkedin: /^https:\/\/(www\.)?linkedin\.com\/[^\/]+\/?$/i,
-      twitter: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[^\/]+\/?$/i
+      facebook: /^https:\/\/(www\.)?facebook\.com\/[^\/?#]+\/?$/i,
+      instagram: /^https:\/\/(www\.)?instagram\.com\/[^\/?#]+\/?$/i,
+      linkedin: /^https:\/\/(www\.)?linkedin\.com\/(in|company)\/[^\/?#]+\/?$/i,
+      twitter: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[^\/?#]+\/?$/i
     };
+
 
     const validateUrl = (url, pattern, name) => {
       if (url && !pattern.test(url)) {
@@ -384,14 +363,13 @@ app.post('/empresas/contato', async (req, res) => {
     if (!contactInfo) {
       return res.status(500).json({ error: 'Erro ao criar dados de contato da empresa' });
     }
-    return res.status(201).json({ message: 'Dados de contato da empresa criados com sucesso', contato: contactInfo });
+    return res.status(201).json({ message: 'Dados de contato da empresa criados com sucesso', contact: contactInfo });
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao criar dados de contato da empresa:', error: err.message });
+    res.status(500).json({ error: 'Erro ao criar dados de contato da empresa', details: err.message });
   }
 });
 
-// POST residuos da empresa
-app.post('/empresas/waste', async (req, res) => {
+app.post('/empresas/wastes', async (req, res) => {
   try {
     if (!req.body) return res.status(400).json({ error: "dados inválidos" });
 
@@ -401,6 +379,7 @@ app.post('/empresas/waste', async (req, res) => {
     const newWastes = createWaste(user_id, wastes)
 
     if (!newWastes) return res.status(500).json({ error: 'Erro ao criar resíduos da empresa' });
+    res.status(200).json({ message: 'Resíduos da empresa criados com succeso', newWastes })
   } catch (err) {
     res.status(500).json({ error: 'Erro ao criar resíduos:', error: err.message });
   }
@@ -416,6 +395,7 @@ app.post('/empresas/points', async (req, res) => {
     const newPoints = await createPoints(user_id, points)
 
     if (!newPoints) return res.status(500).json({ error: "erro ao criar pontos de coleta" })
+      res.status(200).json({ message: 'Pontos de coleta da empresa criados com succeso', newPoints })
   } catch (err) {
     res.status(500).json({ error: 'Erro ao criar pontos de coleta:', error: err.message });
   }

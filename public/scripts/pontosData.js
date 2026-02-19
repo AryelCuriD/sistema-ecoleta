@@ -1,7 +1,7 @@
 window.pontosData = [
     {
       name: 'Ponto de Coleta lixo Eletrônico Cascavel',
-      image: '/images/pontos-coleta/ponto-coleta-lixo-eletronico-cascavel.jpg',
+      image: '../images/pontos-coleta/ponto-coleta-lixo-eletronico-cascavel.jpg',
       coords: [-24.9558, -53.455],
     },
     {
