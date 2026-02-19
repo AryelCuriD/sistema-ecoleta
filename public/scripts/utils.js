@@ -130,3 +130,32 @@ function validateSocial(rede, input) {
   input.setCustomValidity("");
   return true;
 }
+
+
+const setupCompanySearch = () => {
+  const searchInput = document.querySelector('.search');
+  if (!searchInput) return;
+
+  const currentParams = new URLSearchParams(window.location.search);
+  const currentQuery = currentParams.get('search') || '';
+
+  if (currentQuery && !searchInput.value.trim()) {
+    searchInput.value = currentQuery;
+  }
+
+  searchInput.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+
+    event.preventDefault();
+
+    const searchValue = searchInput.value.trim();
+    if (!searchValue) return;
+
+    const targetUrl = new URL('/initial-page', window.location.origin);
+    targetUrl.searchParams.set('search', searchValue);
+
+    window.location.href = targetUrl.toString();
+  });
+};
+
+document.addEventListener('DOMContentLoaded', setupCompanySearch);

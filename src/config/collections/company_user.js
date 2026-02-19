@@ -77,9 +77,10 @@ const deleteUser = async (id, email, password) => {
     await connectToDb();
     const db = getDb();
     const collection_users = db.collection(collection);
-    const realEmail = await collection_users.findOne({ id }).email
-    const realPassword = await collection_users.findOne({ id }).password
-    console.log(id, realEmail, realPassword)
+    const doc = await collection_users.findOne({ _id: new ObjectId(id) })
+    const realEmail = doc.email
+    const realPassword = doc.password
+
     const match = await bcrypt.compare(password, realPassword) && (email === realEmail)
     
     if (match) {

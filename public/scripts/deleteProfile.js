@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const data = await getLoggedUserData()
     id = data.user
-    console.log(data)
     try {
       const res = await fetch('/api/me', { credentials: 'include' })
 
@@ -49,14 +48,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   confirmDeleteButton.addEventListener('click', async () => {
     try {
-      const res = await fetch(`/empresa/user/${id}`, {
+      const res = await fetch(`/empresa/user/${id._id}`, {
         method: "DELETE",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
 
       if (res.ok) {
-        console.log('boa meu')
+        console.log('a')
+        await fetch('/api/logout', {
+          method: 'POST'
+        });
+        window.location.href = '/initial-page'
       }
     } catch (err) {
       console.error(err)

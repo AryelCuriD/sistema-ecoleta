@@ -47,7 +47,7 @@ const deletePoints = async (id) => {
         const db = getDb();
         const collection_points = db.collection(collection);
 
-        const result = await collection_points.deleteOne({ _id: new ObjectId(id) });
+        const result = await collection_points.deleteOne({ user_id: id });
         return result.deletedCount > 0;
     } catch (err) {
         console.error(err)

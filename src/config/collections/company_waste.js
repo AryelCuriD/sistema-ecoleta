@@ -47,7 +47,7 @@ const deleteWaste = async (id) => {
         const db = getDb();
         const collection_waste = db.collection(collection);
 
-        const result = await collection_waste.deleteOne({ _id: new ObjectId(id) });
+        const result = await collection_waste.deleteOne({ user_id: id });
         return result.deletedCount > 0;
     } catch (err) {
         console.error(err)

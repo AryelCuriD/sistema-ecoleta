@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filterOptionsContainer = document.querySelector('#waste-filter-options');
     const wasteFilterForm = document.querySelector('#waste-filter-form');
     const cleanFiltersButton = document.querySelector('#clean-waste-filters');
+    const searchInput = document.querySelector('.search');
+
+    const normalizeSearchTerm = (value) => String(value || '').trim().toLowerCase();
+    const currentSearch = new URLSearchParams(window.location.search).get('search') || '';
 
     const users = await getUsers();
     const wastesResponse = await fetch('/empresas/wastes');
@@ -46,10 +50,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             .join('');
     }
 
-    const renderCompanies = (selectedWastes = []) => {
+    const renderCompanies = (selectedWastes = [], companyNameSearch = currentSearch) => {
         const normalizedSelectedWastes = selectedWastes.map(waste => waste.toLowerCase());
+        const normalizedNameSearch = normalizeSearchTerm(companyNameSearch);
 
         const filteredCompanies = companiesData.filter((company) => {
+            const companyName = normalizeSearchTerm(company.info.nome_empresa);
+            const matchesName = !normalizedNameSearch || companyName.includes(normalizedNameSearch);
+
+            if (!matchesName) return false;
+
             if (normalizedSelectedWastes.length === 0) {
                 return true;
             }
@@ -61,7 +71,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         cardEmpresas.innerHTML = '<h3>Empresas Parceiras</h3>';
 
         if (filteredCompanies.length === 0) {
-            cardEmpresas.innerHTML += '<p>Nenhuma empresa encontrada para os resíduos selecionados.</p>';
+            cardEmpresas.innerHTML += normalizedNameSearch
+                ? '<p>Nenhuma empresa encontrada para o termo pesquisado.</p>'
+                : '<p>Nenhuma empresa encontrada para os resíduos selecionados.</p>';
             return;
         }
 
@@ -91,6 +103,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
 
+    if (currentSearch && searchInput && !searchInput.value.trim()) {
+        searchInput.value = currentSearch;
+    }
+
     wasteFilterForm.addEventListener('change', () => {
         const selectedWastes = [...wasteFilterForm.querySelectorAll('input[name="residuo"]:checked')]
             .map(input => input.value);
@@ -103,8 +119,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         checkedFilters.forEach((input) => {
             input.checked = false;
         });
-        renderCompanies();
+        renderCompanies([], currentSearch);
     });
 
-    renderCompanies();
+    renderCompanies([], currentSearch);
 });

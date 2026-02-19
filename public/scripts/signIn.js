@@ -37,6 +37,21 @@ function callError(errors, step) {
   }
 }
 
+
+const sanitizeCompanyName = (value) => {
+  const rawValue = String(value || '');
+  const parsedValue = typeof stripHTMLTags === 'function'
+    ? stripHTMLTags(rawValue)
+    : rawValue.replace(/<[^>]*>/g, ' ');
+
+  const normalized = parsedValue
+    .replace(/[<>]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return normalized;
+};
+
 const companyNameIn = document.getElementById("nome-empresa");
 const cnpjIn = document.getElementById("cnpj");
 const socialReasonIn = document.getElementById("razao-social");
@@ -117,8 +132,10 @@ logoIn.addEventListener('change', (e) => {
 
 document.querySelector('#button-1').addEventListener('click', async (e) => {
   let errors = []
-  if (!companyNameIn.value.trim()) {
-    errors.push('O campo "Nome da Empresa" é obrigatório.');
+  const sanitizedCompanyName = sanitizeCompanyName(companyNameIn.value);
+
+  if (!sanitizedCompanyName) {
+    errors.push('Informe um "Nome da Empresa" válido (somente texto).');
   }
   if (!cnpjIn.value.trim()) {
     errors.push('O campo "CNPJ" é obrigatório.');
@@ -145,8 +162,10 @@ document.querySelector('#button-1').addEventListener('click', async (e) => {
 
   clearErrors();
 
+  companyNameIn.value = sanitizedCompanyName;
+
   data.info = {
-    nome_empresa: companyNameIn.value,
+    nome_empresa: sanitizedCompanyName,
     cnpj: cnpjIn.value,
     razao_social: socialReasonIn.value,
     descricao: descIn.value,
@@ -402,6 +421,7 @@ function initializeMap() {
 
   const selectedByRowId = new Map();
   const markersByName = new Map();
+  const fallbackPointImage = '/images/pontos-coleta/placeholder.svg';
 
   const getSelectedSet = () => {
     const set = new Set();
@@ -413,12 +433,12 @@ function initializeMap() {
 
   const createPopupHTML = (ponto) => {
     const safeName = String(ponto.name);
-    const safeImg = String(ponto.image);
+    const safeImg = String(ponto.image || fallbackPointImage);
 
     return `
       <div style="max-width:220px;">
         <strong style="display:block;margin-bottom:6px;">${safeName}</strong>
-        <img src="${safeImg}" style="width:100%;border-radius:10px;display:block;margin-bottom:6px;">
+        <img src="${safeImg}" onerror="this.onerror=null;this.src='${fallbackPointImage}';" style="width:100%;border-radius:10px;display:block;margin-bottom:6px;">
         <small style="opacity:.8;">${ponto.coords[0].toFixed(5)}, ${ponto.coords[1].toFixed(5)}</small>
       </div>
     `;
