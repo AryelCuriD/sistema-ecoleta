@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const editButton = document.getElementById('edit-profile-button');
   if (editButton) {
     editButton.addEventListener('click', () => {
-      window.alert('Fluxo de edição de perfil será implementado em breve.');
+      window.location.href = '/edit-profile'
     });
   }
 
