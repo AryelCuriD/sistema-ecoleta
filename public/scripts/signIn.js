@@ -15,7 +15,7 @@ function callError(errors, step) {
   });
 
   switch (step) {
-    case 1: 
+    case 1:
       const card = document.querySelector('.cadastro-card[data-step="1"]');
       card.appendChild(errorDiv);
       break;
@@ -171,7 +171,7 @@ document.querySelector('#button-1').addEventListener('click', async (e) => {
     descricao: descIn.value,
     logo: logoIn.files[0]
   }
-  
+ 
   document.querySelector('.cadastro-card[data-step="1"]').classList.add('is-hidden');
   document.querySelector('.cadastro-card[data-step="2"]').classList.remove('is-hidden');
 })
@@ -303,7 +303,7 @@ function attachWasteCapitalization(inputEl) {
 
 attachWasteCapitalization(document.querySelector('.residuo-item input'));
 
-addWasteBtn.addEventListener('click', () => { 
+addWasteBtn.addEventListener('click', () => {
   const wasteList = document.querySelector('.residuos-list');
   const count = document.querySelectorAll('.residuo-item').length + 1;
   const newItem = document.createElement('div');
@@ -423,6 +423,27 @@ function initializeMap() {
   const markersByName = new Map();
   const fallbackPointImage = '/images/pontos-coleta/placeholder.svg';
 
+  const escapeHtml = (value) => String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+
+  const getSafeImageSrc = (src) => {
+    const raw = String(src || '').trim();
+    const fallback = new URL(fallbackPointImage, window.location.origin).toString();
+
+    if (!raw) return fallback;
+
+    try {
+      const normalized = new URL(raw, window.location.origin);
+      return encodeURI(normalized.toString());
+    } catch (err) {
+      return fallback;
+    }
+  };
+
   const getSelectedSet = () => {
     const set = new Set();
     for (const name of selectedByRowId.values()) {
@@ -432,13 +453,14 @@ function initializeMap() {
   };
 
   const createPopupHTML = (ponto) => {
-    const safeName = String(ponto.name);
-    const safeImg = String(ponto.image || fallbackPointImage);
+    const safeName = escapeHtml(ponto.name);
+    const safeImg = getSafeImageSrc(ponto.image);
+    const safeFallbackImage = getSafeImageSrc(fallbackPointImage);
 
     return `
       <div style="max-width:220px;">
         <strong style="display:block;margin-bottom:6px;">${safeName}</strong>
-        <img src="${safeImg}" onerror="this.onerror=null;this.src='${fallbackPointImage}';" style="width:100%;border-radius:10px;display:block;margin-bottom:6px;">
+        <img src="${safeImg}" onerror="this.onerror=null;this.src='${safeFallbackImage}';" style="width:100%;border-radius:10px;display:block;margin-bottom:6px;">
         <small style="opacity:.8;">${ponto.coords[0].toFixed(5)}, ${ponto.coords[1].toFixed(5)}</small>
       </div>
     `;
@@ -633,7 +655,7 @@ document.querySelector('.btn-finalizar').addEventListener('click', async () => {
   }
 
   if (
-  
+ 
   corpEmailIn.value.trim() &&
   emailFinalIn.value.trim().toLowerCase() === corpEmailIn.value.trim().toLowerCase()
   ) {
@@ -701,7 +723,7 @@ async function dataFetch() {
   } catch (err) {
     console.error(err)
   }
-  
+ 
   async function infoFetch() {
     const formData = new FormData()
     formData.append('user_id', user_id)

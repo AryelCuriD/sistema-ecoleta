@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
       })
 
       if (res.ok) {
-        console.log('a')
         await fetch('/api/logout', {
           method: 'POST'
         });
