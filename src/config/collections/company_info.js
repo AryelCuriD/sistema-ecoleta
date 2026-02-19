@@ -114,8 +114,6 @@ const createInfo = async (user_id, nome_empresa, cnpj, razao_social, logo, descr
     await connectToDb();
     const bd = getDb();
     const collection_empresas = bd.collection(collection);
-    
-    await cleanupOrphanGridFS();
 
     const newData = {
       user_id: user_id,
@@ -126,6 +124,7 @@ const createInfo = async (user_id, nome_empresa, cnpj, razao_social, logo, descr
       descricao: descricao
     }
     await collection_empresas.insertOne(newData);
+    await cleanupOrphanGridFS();
     return newData;
   } catch (err) {
     console.error("Erro ao inserir dados de identificação:", err.message);
