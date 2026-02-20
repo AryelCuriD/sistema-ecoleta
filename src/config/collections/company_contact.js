@@ -77,7 +77,7 @@ const findContact = async (id) => {
     }
 }
 
-const editContact = async (id, user_id, telefone, email, facebook, instagram, linkedin, twitter) => {
+const editContact = async (id, telefone, email, facebook, instagram, linkedin, twitter) => {
     try {
         await connectToDb();
         const db = getDb();
@@ -87,7 +87,6 @@ const editContact = async (id, user_id, telefone, email, facebook, instagram, li
             { _id: new ObjectId(id) },
 
             { $set: {
-                user_id: user_id,
                 telefone: telefone,
                 email: email,
                 social_media: {
@@ -99,7 +98,7 @@ const editContact = async (id, user_id, telefone, email, facebook, instagram, li
             }}
         );
         
-        return result.modifiedCount > 0;
+        return true
     } catch (err) {
         console.error("Erro ao editar dados de contato da empresa:", err.message);
         throw err;

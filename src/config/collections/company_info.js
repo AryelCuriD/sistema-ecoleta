@@ -161,7 +161,8 @@ const editInfo = async (id, updatedData) => {
       { $set: updatedData }
     );
     
-    return resultado.modifiedCount > 0;
+    await cleanupOrphanGridFS();
+    return true
   } catch (err) {
     console.error("Erro ao editar dados de identificação da empresa:", err.message);
     throw err;

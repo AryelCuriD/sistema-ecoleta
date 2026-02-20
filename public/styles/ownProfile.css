@@ -94,6 +94,10 @@
   font-size: 24px;
 }
 
+#company-desc {
+  overflow-wrap: break-word;
+}
+
 .material-tags {
   display: flex;
   flex-wrap: wrap;

@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('confirm-overlay');
   const confirmDeleteButton = document.getElementById('confirm-delete-button');
   const cancelDeleteButton = document.getElementById('cancel-delete-button');
+  
+  const errorMsg = document.querySelector('.error-msg');
 
   let email
   let password
@@ -53,12 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
+      const msg = await res.json();
 
       if (res.ok) {
+        errorMsg.style.display = 'none';
+
         await fetch('/api/logout', {
           method: 'POST'
         });
         window.location.href = '/initial-page'
+      } else {
+        errorMsg.style.display = 'flex';
+        errorMsg.textContent = msg.error || 'Não foi possível excluir o usuário, tente novamente'
       }
     } catch (err) {
       console.error(err)

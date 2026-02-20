@@ -15,6 +15,7 @@
   <header>
     <a href="/initial-page"><img src="../images/logo.png" class="logo" alt="Logo Ecoleta"></a>
     <a class="login" href="/login">Faça Login</a>
+    <a href="/own-profile"><img class="profile" src="../images/profile.png"></a>
 
     <div class="search-div">
       <input type="text" placeholder="Encontrar empresas..." class="search">
@@ -82,7 +83,7 @@
       </div>
     </section>
 
-    <section class="edit-card is-hidden" data-step="2">
+    <section class="edit-card" data-step="2">
       <div class="edit-card-header">
         <div>
           <h2>Escopo de Coleta</h2>
@@ -94,10 +95,15 @@
       <div class="residuos-wrapper">
         <div class="residuos-card">
           <div class="residuos-list">
+            
             <div class="residuo-item">
               <span class="residuo-label">Resíduo 1</span>
-              <input type="text" placeholder="Exemplo: Papelão">
+              <div class="residuo-row">
+                <input type="text" id="input-1" placeholder="Exemplo: Papelão">
+                <button style="display: none;" class="remove-residuo" id="delete-1" type="button"><img src="../images/trash.png"></button>
+              </div>
             </div>
+
           </div>
           <button class="add-residuo" type="button">＋</button>
         </div>
@@ -109,7 +115,7 @@
       </div>
     </section>
 
-    <section class="edit-card is-hidden" data-step="3">
+    <section class="edit-card" data-step="3">
       <div class="edit-card-header">
         <div>
           <h2>Pontos de Coleta de Materiais</h2>
@@ -141,6 +147,8 @@
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../scripts/utils.js"></script>
+  <script src="../scripts/pontosData.js"></script>
   <script src="../scripts/editProfile.js"></script>
 </body>
 

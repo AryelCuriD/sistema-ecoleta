@@ -711,11 +711,22 @@ async function dataFetch() {
 
     if (res.ok) {
       user_id = userData.newUser._id;
-      infoFetch();
-      contactFetch();
-      wastesFetch();
-      pointsFetch();
-      loginFetch();
+
+      const results = await Promise.all([
+        infoFetch(),
+        contactFetch(),
+        wastesFetch(),
+        pointsFetch()
+      ]);
+
+      const allSuccess = results.every(r => r === true);
+
+      if (!allSuccess) {
+        callError(['Erro ao salvar dados da empresa, tente novamente'], 5);
+        return;
+      }
+
+      await loginFetch();
     } else {
       errors.push(userData.error)
       callError(errors, 5)
@@ -738,11 +749,8 @@ async function dataFetch() {
         method: 'POST',
         body: formData
       });
-      const newInfo = await res.json()
 
-      if (res.ok) {
-        console.log(newInfo)
-      }
+      return res.ok
     } catch (err) {
       console.error(err)
     }
@@ -763,11 +771,8 @@ async function dataFetch() {
         method: 'POST',
         body: formData
       });
-      const newContact = await res.json()
-
-      if (res.ok) {
-        console.log(newContact)
-      }
+      
+      return res.ok
     } catch (err) {
       console.error(err)
     }
@@ -781,11 +786,8 @@ async function dataFetch() {
         headers: { 'Content-type': 'application/json' },
         body: JSON.stringify({ user_id, wastes })
       });
-      const newWastes = await res.json()
-
-      if (res.ok) {
-        console.log(newWastes)
-      }
+      
+      return res.ok
     } catch (err) {
       console.error(err)
     }
@@ -799,11 +801,8 @@ async function dataFetch() {
         headers: { 'Content-type': 'application/json' },
         body: JSON.stringify({ user_id, points })
       });
-      const newPoints = await res.json()
-
-      if (newPoints) {
-        console.log(newPoints)
-      }
+      
+      return res.ok
     } catch (err) {
       console.error(err)
     }

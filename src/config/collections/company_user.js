@@ -60,8 +60,7 @@ const getUsers = async () => {
     const users = await collectionUsers.find().toArray()
 
     if (users.length === 0) {
-      console.log("Nenhum documento foi encontrado.");
-      return; 
+      return {}; 
     }
 
     return users;

@@ -35,7 +35,7 @@ const editWaste = async (id, wastes) => {
                 wastes: wastes
             } 
         });
-        return result.modifiedCount > 0;
+        return true
     } catch (err) {
         console.error(err)
     }
