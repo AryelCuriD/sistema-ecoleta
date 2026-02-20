@@ -159,6 +159,15 @@
   line-height: 1.4;
 }
 
+.error-msg {
+  display: none;
+  color: #A74545;
+  font-size: 12px;
+  height: 14px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
 .modal-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

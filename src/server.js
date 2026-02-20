@@ -14,7 +14,6 @@ const { createPoints, editPoints, deletePoints, getPoints, findPoints } = requir
 const { findUser, registerCompany, getUsers, deleteUser, findUserData } = require('./config/collections/company_user.js');
 const cookieParser = require('cookie-parser');
 const verifyAuth = require('./controllers/verifyAuth.js');
-const { error, info } = require('console');
 
 const app = express();
 app.use(express.json());
@@ -237,14 +236,20 @@ app.get("/empresas/logo/:id", async (req, res) => {
   }
 });
 
-//Login / logout de empresa
+
+
 app.post('/api/login', async (req, res) => {
-  login(req, res, await getUsers())
+  const users = await getUsers();
+
+  if (!Array.isArray(users) || users.length === 0) {
+    return res.status(500).json({ error: "Nenhum usuário cadastrado." });
+  }
+
+  return login(req, res, users);
 });
 
 app.post('/api/logout', logout)
 
-//Sign in de empresa (Cadastro)
 app.post('/api/signin', async (req, res) => { 
   try {
     const { email, password } = req.body;
@@ -253,7 +258,7 @@ app.post('/api/signin', async (req, res) => {
 
     const users = await getUsers();
   
-    if (users) {
+    if (Array.isArray(users) || users.length >= 0) {
       const userExists = users.find(user => user.email === email);
       
       if (userExists) {
@@ -331,7 +336,6 @@ app.post('/empresas/contato', upload.none(), async (req, res) => {
       twitter: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[^\/?#]+\/?$/i
     };
 
-
     const validateUrl = (url, pattern, name) => {
       if (url && !pattern.test(url)) {
         return `URL inválida para ${name}`;
@@ -401,9 +405,8 @@ app.post('/empresas/points', async (req, res) => {
   }
 })
 
-//PUT
 
-// Editar dados básicos das empresas
+
 app.put("/empresas/info/:info_id", upload.single("logo"), async (req, res) => {
   try {
     const { info_id } = req.params;
@@ -468,19 +471,18 @@ app.put("/empresas/info/:info_id", upload.single("logo"), async (req, res) => {
   }
 });
 
-// Editar dados de contato das empresas
 app.put('/empresas/contato/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { user_id, telefone, email, facebook, instagram, linkedin, twitter } = req.body;
+    const { telefone, email, facebook, instagram, linkedin, twitter } = req.body;
 
-    if (!user_id || !telefone || !email) return res.status(400).json({ error: "Campos obrigatórios estão faltando." });
-
+    if (!telefone || !email) return res.status(400).json({ error: "Campos obrigatórios estão faltando." });
+    
     const patterns = {
-      facebook: /^https:\/\/(www\.)?facebook\.com\/[^\/]+\/?$/i,
-      instagram: /^https:\/\/(www\.)?instagram\.com\/[^\/]+\/?$/i,
-      linkedin: /^https:\/\/(www\.)?linkedin\.com\/[^\/]+\/?$/i,
-      twitter: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[^\/]+\/?$/i
+      facebook: /^https:\/\/(www\.)?facebook\.com\/[^\/?#]+\/?$/i,
+      instagram: /^https:\/\/(www\.)?instagram\.com\/[^\/?#]+\/?$/i,
+      linkedin: /^https:\/\/(www\.)?linkedin\.com\/(in|company)\/[^\/?#]+\/?$/i,
+      twitter: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[^\/?#]+\/?$/i
     };
 
     const validateUrl = (url, pattern, name) => {
@@ -501,7 +503,7 @@ app.put('/empresas/contato/:id', async (req, res) => {
       return res.status(400).json({ error: errors });
     }
 
-    const resultado = await editContact(id, user_id, telefone, email, facebook, instagram, linkedin, twitter);
+    const resultado = await editContact(id, telefone, email, facebook, instagram, linkedin, twitter);
 
     if (resultado) {
       res.status(200).json({ message: "Dados de contato editados com sucesso."});
@@ -514,7 +516,7 @@ app.put('/empresas/contato/:id', async (req, res) => {
   }
 })
 
-app.put('/empresas/waste/:id', async (req, res) => {
+app.put('/empresas/wastes/:id', async (req, res) => {
   try {
     if (!req.body) return res.status(400).json({ error: 'Dados inválidos' });
     const id = req.params
@@ -530,7 +532,7 @@ app.put('/empresas/waste/:id', async (req, res) => {
   }
 })
 
-app.put('/empresa/points/:id', async (req, res) => {
+app.put('/empresas/points/:id', async (req, res) => {
   try {
     if (!req.body) return res.status(400).json({ error: 'Dados inválidos' });
     const id = req.params
@@ -554,15 +556,16 @@ app.delete('/empresa/user/:id', async (req, res) => {
     if (!id) return res.status(400).json({ error: "ID é obrigatório." });
 
     const userResult = await deleteUser(id, email, password)
-    await deleteInfo(id)
-    await deleteContact(id)
-    await deleteWaste(id)
-    await deletePoints(id)
     
     if (userResult) {
+      await deleteInfo(id)
+      await deleteContact(id)
+      await deleteWaste(id)
+      await deletePoints(id)
+
       res.status(200).json({ message: "Usuário excluído com sucesso." });
     } else {
-      res.status(404).json({ error: "Usuário não encontrado." });
+      res.status(404).json({ error: "Email ou senha inválidos." });
     }
   } catch (err) {
     res.status(500).json({ error: "Erro ao excluir usuário:", error: err.message })
