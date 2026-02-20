@@ -1,9 +1,7 @@
-/* Mantém o fundo e centraliza tudo */
 .login-page main {
   flex: 1;
 }
 
-/* Main centralizado (sem header/footer) */
 .login-main {
   min-height: 100vh;
   display: flex;
@@ -15,7 +13,6 @@
   box-sizing: border-box;
 }
 
-/* Topo: logo + título + subtítulo */
 .login-topo {
   display: flex;
   flex-direction: column;
@@ -45,7 +42,6 @@
   font-weight: 600;
 }
 
-/* Card branco central */
 .login-card {
   width: 100%;
   max-width: 420px;
@@ -56,7 +52,6 @@
   box-sizing: border-box;
 }
 
-/* Form */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -70,7 +65,6 @@
   margin-top: 6px;
 }
 
-/* Inputs */
 .login-input {
   height: 44px;
   border-radius: 10px;
@@ -92,7 +86,6 @@
   box-shadow: 0 0 0 3px rgba(111, 191, 115, 0.15);
 }
 
-/* mensagem de erro do login */
 .error-msg {
   display: none;
   color: #A74545;
@@ -102,7 +95,6 @@
   font-weight: 600;
 }
 
-/* Checkbox */
 .login-lembrar {
   display: flex;
   align-items: center;
@@ -119,7 +111,6 @@
   accent-color: #6fbf73;
 }
 
-/* Botão amarelo */
 .login-botao {
   margin-top: 10px;
   height: 46px;
@@ -136,7 +127,6 @@
   opacity: 0.92;
 }
 
-/* Link cadastrar */
 .login-cadastro {
   margin: 14px 0 0 0;
   font-size: 12px;
@@ -155,7 +145,6 @@
   text-decoration: underline;
 }
 
-/* Voltar */
 .login-voltar {
   font-size: 12px;
   color: #233026;
